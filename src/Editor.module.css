@@ -1,0 +1,27 @@
+
+.layoutContainer {
+    width:100%;
+    height:100%;
+    display: flex;
+    flex-direction: column;
+}
+.editorContainer {
+    width:100%;
+    height:100%;
+}
+.textarea {
+    outline: none !important;
+    background: rgb(50,50,50);
+    color: rgb(255,255,255);
+    width:100%;
+    height:100%;
+    box-sizing: border-box;         /* For IE and modern versions of Chrome */
+    -moz-box-sizing: border-box;    /* For Firefox                          */
+    -webkit-box-sizing: border-box; /* For Safari                           */
+
+    border-color: var(--blurred-textarea-outline);
+}
+
+.textarea:focus {
+    border-color: var(--focused-textarea-outline);
+}
