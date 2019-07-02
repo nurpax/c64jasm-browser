@@ -4,9 +4,9 @@ const App: React.FC = () => {
   return (
     <Fragment>
       <header id="pageHeader">Header</header>
-      <article id="mainArticle">Article</article>
+      <div id="mainCode">Assembly code</div>
       <nav id="mainNav">Nav</nav>
-      <div id="siteAds">Ads</div>
+      <div id="siteDisasm">Disassembly</div>
       <footer id="pageFooter">Footer</footer>
     </Fragment>
   );

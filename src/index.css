@@ -4,24 +4,25 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background:rgb(37, 37, 38);
+  color: rgb(173, 173, 173);
 }
 
 #root {
   display: grid;
   grid-template-areas:
     "header header header"
-    "nav article ads"
+    "nav code disasm"
     "nav footer footer";
   grid-template-rows: 80px 1fr 70px;
-  grid-template-columns: 20% 1fr 15%;
+  grid-template-columns: 20% 1fr 1fr;
   grid-row-gap: 10px;
   grid-column-gap: 10px;
   height: 100vh;
   margin: 0;
   }
-header, footer, article, nav, div {
+header, footer, div#code, nav, div {
   padding: 1.2em;
-  background: gold;
   }
 #pageHeader {
   grid-area: header;
@@ -29,22 +30,24 @@ header, footer, article, nav, div {
 #pageFooter {
   grid-area: footer;
   }
-#mainArticle {
-  grid-area: article;
+#mainCode {
+  grid-area: code;
+  background: rgb(30, 30, 30);
   }
 #mainNav {
   grid-area: nav;
   }
-#siteAds {
-  grid-area: ads;
-  }
+#siteDisasm {
+  grid-area: disasm;
+  background: rgb(30, 30, 30);
+}
 /* Stack the layout on small devices/viewports. */
 @media all and (max-width: 575px) {
   body {
     grid-template-areas:
       "header"
-      "article"
-      "ads"
+      "code"
+      "disasm"
       "nav"
       "footer";
     grid-template-rows: 80px 1fr 70px 1fr 70px;
