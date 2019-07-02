@@ -1,20 +1,14 @@
-import React from 'react';
-import './App.css';
+import React, { Fragment } from 'react';
 
 const App: React.FC = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React XXX
-        </a>
-      </header>
-    </div>
+    <Fragment>
+      <header id="pageHeader">Header</header>
+      <article id="mainArticle">Article</article>
+      <nav id="mainNav">Nav</nav>
+      <div id="siteAds">Ads</div>
+      <footer id="pageFooter">Footer</footer>
+    </Fragment>
   );
 }
 
