@@ -3,13 +3,21 @@ import React from 'react';
 
 import styles from './Editor.module.css'
 
-export default class extends React.Component {
+interface EditorProps {
+  onSourceChanged: (text: string) => void;
+}
+
+export default class extends React.Component<EditorProps> {
+  handleSourceChanged = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    this.props.onSourceChanged(e.target.value);
+  }
+
   render () {
     return (
       <div className={styles.layoutContainer}>
-        <div>Assembly</div>
+        <div className={styles.heading}>Assembly</div>
         <div className={styles.editorContainer}>
-          <textarea className={styles.textarea}></textarea>
+          <textarea onChange={this.handleSourceChanged} className={styles.textarea}></textarea>
         </div>
       </div>
     )

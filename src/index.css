@@ -1,4 +1,5 @@
 :root {
+  --heading-bottom-margin: 1em;
   --focused-textarea-outline: #888;
   --blurred-textarea-outline: #555;
 }
@@ -11,6 +12,11 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background:rgb(37, 37, 38);
   color: rgb(173, 173, 173);
+}
+
+pre {
+  margin: 0px;
+  padding: 0px;
 }
 
 #root {
