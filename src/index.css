@@ -2,6 +2,12 @@
   --heading-bottom-margin: 1em;
   --focused-textarea-outline: #888;
   --blurred-textarea-outline: #555;
+
+  --gutter-text-color: #777;
+  --code-window-line-height: 16px;
+  --code-window-height: calc(var(--code-window-line-height)*31);
+
+  --diagnostics-height: 100px;
 }
 
 body {
@@ -12,6 +18,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background:rgb(37, 37, 38);
   color: rgb(173, 173, 173);
+  margin: 0px;
 }
 
 pre {
@@ -22,17 +29,18 @@ pre {
 #root {
   display: grid;
   grid-template-areas:
-    "header header header"
-    "nav code disasm"
-    "nav footer footer";
-  grid-template-rows: 80px 1fr 70px;
-  grid-template-columns: 20% 1fr 1fr;
+    "header header header pad"
+    "nav code disasm      pad"
+    "nav diag diag        pad"
+    "nav footer footer    pad";
+  grid-template-rows: 80px 1fr 0.3fr 70px;
+  grid-template-columns: 20px 1fr 1fr 20px;
   grid-row-gap: 10px;
   grid-column-gap: 10px;
   height: 100vh;
   margin: 0;
   }
-header, footer, div#mainCode, nav, div#siteDisasm {
+header, footer, div#mainCode, nav, div#siteDisasm, div#mainPad {
   padding: 1.2em;
   }
 #pageHeader {
@@ -48,10 +56,19 @@ header, footer, div#mainCode, nav, div#siteDisasm {
 #mainNav {
   grid-area: nav;
   }
+#mainPad {
+  grid-area: pad;
+}
+
 #siteDisasm {
   grid-area: disasm;
   background: rgb(30, 30, 30);
 }
+#mainDiag {
+  grid-area: diag;
+  background: rgb(30, 30, 30);
+}
+
 /* Stack the layout on small devices/viewports. */
 @media all and (max-width: 575px) {
   body {
@@ -59,6 +76,7 @@ header, footer, div#mainCode, nav, div#siteDisasm {
       "header"
       "code"
       "disasm"
+      "diag"
       "nav"
       "footer";
     grid-template-rows: 80px 1fr 70px 1fr 70px;

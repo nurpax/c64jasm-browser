@@ -1,3 +1,4 @@
+
 .heading {
     margin-bottom: var(--heading-bottom-margin);
 }
@@ -11,20 +12,44 @@
 .editorContainer {
     width:100%;
     height:100%;
+    display: flex;
+    flex-direction: row;
 }
+
 .textarea {
+    line-height: var(--code-window-line-height);
+    resize: none;
     outline: none !important;
     background: rgb(50,50,50);
     color: rgb(255,255,255);
     width:100%;
-    height:100%;
+    height: var(--code-window-height);
+    max-height: var(--code-window-height);
     box-sizing: border-box;         /* For IE and modern versions of Chrome */
     -moz-box-sizing: border-box;    /* For Firefox                          */
     -webkit-box-sizing: border-box; /* For Safari                           */
 
-    border-color: var(--blurred-textarea-outline);
+    overflow-y: auto;
+
+    border-width: 0px;
 }
 
 .textarea:focus {
-    border-color: var(--focused-textarea-outline);
+}
+
+.gutter {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    padding-right: 5px;
+
+    line-height: var(--code-window-line-height);
+    height: var(--code-window-height);
+    max-height: var(--code-window-height);
+    overflow: hidden;
+    font-size: 12px;
+}
+
+.gutterRow {
+    color: var(--gutter-text-color);
 }

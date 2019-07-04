@@ -1,0 +1,8 @@
+
+.diagnostics {
+    width:100%;
+    height: var(--diagnostics-height);
+    font-size: 1.0em;
+    font-family: monospace;
+    overflow: auto;
+}
