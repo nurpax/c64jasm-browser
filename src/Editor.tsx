@@ -21,6 +21,7 @@ const Gutter = React.forwardRef((props: {}, ref: React.Ref<HTMLDivElement>) => {
 interface EditorProps {
   onSourceChanged: (text: string) => void;
   diagnostics: { loc: SourceLoc, msg: string }[];
+  errorCharOffset: number | undefined;
 }
 
 interface EditorState {
@@ -50,6 +51,15 @@ export default class extends React.Component<EditorProps, EditorState> {
     }
   }
 
+  componentDidUpdate () {
+    if (this.textareaRef && this.textareaRef.current) {
+      if (this.props.errorCharOffset !== undefined) {
+        this.textareaRef.current.focus();
+        this.textareaRef.current.setSelectionRange(this.props.errorCharOffset, this.props.errorCharOffset);
+      }
+    }
+  }
+
   render () {
     return (
       <div className={styles.layoutContainer}>
@@ -64,4 +74,5 @@ export default class extends React.Component<EditorProps, EditorState> {
       </div>
     )
   }
+
 }

@@ -3,6 +3,7 @@ import React, { Fragment } from 'react';
 import { SourceLoc, assembleWithOptions, disassemble } from 'c64jasm';
 
 import { Diag } from './types'
+import { findCharOffset }  from './editing'
 import Editor from './Editor';
 import Disasm from './Disasm';
 import DiagnosticsList from './DiagnosticsList';
@@ -68,12 +69,14 @@ class App extends React.Component<{}, AppState> {
     const res = assembleWithOptions("foo.asm", options);
     if (res.errors.length === 0) {
       this.setState({
+        sourceCode: text,
         disassembly: disassemble(res.prg),
         diagnostics: [],
         diagnosticsIndex: undefined
       });
     } else {
       this.setState({
+        sourceCode: text,
         diagnostics: res.errors,
         diagnosticsIndex: undefined
       })
@@ -81,14 +84,23 @@ class App extends React.Component<{}, AppState> {
   }
 
   render () {
-    const diags = this.state.diagnostics;
+    const diags: Diag[] = this.state.diagnostics;
+    let editorErrorLoc = undefined;
+    if (diags.length !== 0 && this.state.diagnosticsIndex !== undefined) {
+      const d = diags[this.state.diagnosticsIndex];
+      editorErrorLoc = findCharOffset(this.state.sourceCode, d.loc);
+    }
     return (
       <Fragment>
         <header id="pageHeader">
           <div className={styles.appTitle}>Try C64jasm in a Browser!</div>
         </header>
         <div id="mainCode">
-          <Editor onSourceChanged={this.handleSetSource} diagnostics={this.state.diagnostics} />
+          <Editor
+            onSourceChanged={this.handleSetSource}
+            diagnostics={this.state.diagnostics}
+            errorCharOffset={editorErrorLoc}
+          />
         </div>
         <div id="siteDisasm">
           <Disasm disassembly={this.state.disassembly} />
