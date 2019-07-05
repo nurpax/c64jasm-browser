@@ -2,23 +2,12 @@ import React, { Fragment } from 'react';
 
 import { SourceLoc, assembleWithOptions, disassemble } from 'c64jasm';
 
+import { Diag } from './types'
 import Editor from './Editor';
 import Disasm from './Disasm';
+import DiagnosticsList from './DiagnosticsList';
 
 import styles from './App.module.css';
-
-class Diagnostic extends React.Component<{ error: { loc: SourceLoc, msg: string } }> {
-  render () {
-    const { loc, msg }  = this.props.error;
-    return (
-      <div>
-        main.asm:{loc.start.line}:{loc.start.column}: error: {msg}
-      </div>
-    )
-  }
-}
-
-type Diag = { loc: SourceLoc, msg: string, formatted: string };
 
 interface AppState {
   sourceCode: string;
@@ -62,9 +51,7 @@ class App extends React.Component<{}, AppState> {
           <Disasm disassembly={this.state.disassembly} />
         </div>
         <div id="mainDiag">
-          <div className={styles.diagnostics}>
-            {diags.map((d: Diag) => <Diagnostic key={JSON.stringify(d.loc)} error={d} />)}
-          </div>
+          <DiagnosticsList diagnostics={diags} />
         </div>
         <footer id="pageFooter">Footer</footer>
       </Fragment>
