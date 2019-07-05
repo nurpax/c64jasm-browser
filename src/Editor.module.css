@@ -55,3 +55,7 @@
 .gutterRow {
     color: var(--gutter-text-color);
 }
+
+.gutterRowSelected {
+    color: var(--gutter-text-highlight-color);
+}

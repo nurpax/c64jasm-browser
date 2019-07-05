@@ -5,6 +5,7 @@
   --blurred-textarea-outline: #555;
 
   --gutter-text-color: #777;
+  --gutter-text-highlight-color: #fff;
   --code-window-line-height: 16px;
   --code-window-height: calc(var(--code-window-line-height)*31);
 

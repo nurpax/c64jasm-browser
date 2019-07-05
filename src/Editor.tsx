@@ -1,15 +1,22 @@
 
 import React from 'react';
 import indentTextarea from 'indent-textarea';
+import cn from 'classnames';
 
-import { SourceLoc } from 'c64jasm'
-import styles from './Editor.module.css'
+import { findLine } from './editing';
+import { SourceLoc } from 'c64jasm';
+import styles from './Editor.module.css';
 
-const Gutter = React.forwardRef((props: {}, ref: React.Ref<HTMLDivElement>) => {
+interface GutterProps {
+  currentLine: number;
+}
+
+const Gutter = React.forwardRef((props: GutterProps, ref: React.Ref<HTMLDivElement>) => {
   const rows = [];
   for (let i = 0; i < 100; i++) {
     const str = `${i+1}`;
-    rows.push(<div className={styles.gutterRow} key={i}>{str.padStart(4, ' ')}</div>);
+    const selected = i == props.currentLine && styles.gutterRowSelected;
+    rows.push(<div className={cn(styles.gutterRow, selected)} key={i}>{str.padStart(4, ' ')}</div>);
   }
   return (
     <div ref={ref} className={styles.gutter}>
@@ -26,9 +33,20 @@ interface EditorProps {
 
 interface EditorState {
   scrollTop: number;
+  cursorLoc: {
+    offset: number,
+    line: number
+  }
 }
 
 export default class extends React.Component<EditorProps, EditorState> {
+  state = {
+    scrollTop: 0,
+    cursorLoc: {
+      offset: 0,
+      line: 0
+    }
+  }
   textareaRef = React.createRef<HTMLTextAreaElement>();
   gutterRef = React.createRef<HTMLDivElement>();
 
@@ -42,6 +60,30 @@ export default class extends React.Component<EditorProps, EditorState> {
 
   handleSourceChanged = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     this.props.onSourceChanged(e.target.value);
+  }
+
+  updateCursorState = () => {
+    if (this.textareaRef && this.textareaRef.current) {
+      const loc = this.textareaRef.current.selectionStart;
+      const line = findLine(this.textareaRef.current.value, loc);
+      this.setState({
+        cursorLoc: {
+          offset: loc,
+          line: line !== undefined ? line : 0
+        }
+      })
+    }
+  }
+
+  // Update cursor position when keys are pressed or selection changes on mouse click
+  handleSelect = (e: React.SyntheticEvent<HTMLTextAreaElement>) => {
+    this.updateCursorState();
+  }
+  handleKeyDown = (e: React.KeyboardEvent) => {
+    this.updateCursorState();
+  }
+  handleKeyUp = (e: React.KeyboardEvent) => {
+    this.updateCursorState();
   }
 
   componentDidMount () {
@@ -65,8 +107,12 @@ export default class extends React.Component<EditorProps, EditorState> {
       <div className={styles.layoutContainer}>
         <div className={styles.heading}>Assembly</div>
         <div className={styles.editorContainer}>
-          <Gutter ref={this.gutterRef} />
+          <Gutter ref={this.gutterRef} currentLine={this.state.cursorLoc.line} />
           <textarea
+            wrap='off'
+            onKeyUp={this.handleKeyUp}
+            onKeyDown={this.handleKeyDown}
+            onSelect={this.handleSelect}
             onScroll={this.handleScroll}
             ref={this.textareaRef}
             onChange={this.handleSourceChanged} className={styles.textarea}></textarea>
