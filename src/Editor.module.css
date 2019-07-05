@@ -17,6 +17,7 @@
 }
 
 .textarea {
+    padding: 0px;
     line-height: var(--code-window-line-height);
     resize: none;
     outline: none !important;
