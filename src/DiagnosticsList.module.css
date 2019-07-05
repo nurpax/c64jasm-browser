@@ -6,3 +6,22 @@
     font-family: monospace;
     overflow: auto;
 }
+
+.diagItem {
+    cursor: pointer;
+    width: 100%;
+    height: var(--diagnostics-item-height);
+}
+
+.selected {
+    background:rgb(0, 122, 204);
+    color: #fff;
+}
+
+.error {
+    color: rgb(218, 98, 98);
+}
+
+.error.selected {
+    color: #fff;
+}

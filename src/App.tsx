@@ -12,6 +12,7 @@ import styles from './App.module.css';
 interface AppState {
   sourceCode: string;
   disassembly: string[];
+  diagnosticsIndex: number | undefined;
   diagnostics: Diag[];
 };
 
@@ -19,31 +20,73 @@ class App extends React.Component<{}, AppState> {
   state = {
     sourceCode: '',
     disassembly: [],
+    diagnosticsIndex: 0,
     diagnostics: []
   }
 
-  handleSetSource = (text: string) => {
-      const options = {
-        readFileSync: (fname: string) => text
-      }
-      const res = assembleWithOptions("foo.asm", options);
-      if (res.errors.length === 0) {
-        this.setState({
-          disassembly: disassemble(res.prg),
-          diagnostics: []
-        });
-      } else {
-        this.setState({
-          diagnostics: res.errors
-        })
-      }
+  componentDidMount () {
+    document.addEventListener('keydown', this.handleKeyDown);
+  }
+
+  handleKeyDown = (e: KeyboardEvent) => {
+    if (e.key == 'F4') {
+      this.setState((prevState) => {
+        if (prevState.diagnostics.length == 0) {
+          return { diagnosticsIndex: 0 };
+        }
+        if (prevState.diagnosticsIndex === undefined) {
+          return { diagnosticsIndex: 0 };
+        }
+        if (e.shiftKey) {
+          return {
+            diagnosticsIndex: Math.max(0, prevState.diagnosticsIndex - 1)
+          }
+        } else {
+          return {
+            diagnosticsIndex: Math.min(prevState.diagnostics.length - 1, prevState.diagnosticsIndex + 1)
+          }
+        }
+      })
+      e.preventDefault();
     }
+    if (e.key == 'Escape') {
+      this.setState({ diagnosticsIndex: undefined });
+      e.preventDefault();
+    }
+  }
+
+  handleOnClickDiagnostic = (idx: number) => {
+    this.setState({
+      diagnosticsIndex: idx
+    })
+  }
+
+  handleSetSource = (text: string) => {
+    const options = {
+      readFileSync: (fname: string) => text
+    }
+    const res = assembleWithOptions("foo.asm", options);
+    if (res.errors.length === 0) {
+      this.setState({
+        disassembly: disassemble(res.prg),
+        diagnostics: [],
+        diagnosticsIndex: undefined
+      });
+    } else {
+      this.setState({
+        diagnostics: res.errors,
+        diagnosticsIndex: undefined
+      })
+    }
+  }
 
   render () {
     const diags = this.state.diagnostics;
     return (
       <Fragment>
-        <header id="pageHeader">Header</header>
+        <header id="pageHeader">
+          <div className={styles.appTitle}>Try C64jasm in a Browser!</div>
+        </header>
         <div id="mainCode">
           <Editor onSourceChanged={this.handleSetSource} diagnostics={this.state.diagnostics} />
         </div>
@@ -51,9 +94,12 @@ class App extends React.Component<{}, AppState> {
           <Disasm disassembly={this.state.disassembly} />
         </div>
         <div id="mainDiag">
-          <DiagnosticsList diagnostics={diags} />
+          <DiagnosticsList
+            onClickItem={this.handleOnClickDiagnostic}
+            diagnostics={this.state.diagnostics}
+            selectedIndex={this.state.diagnosticsIndex} />
         </div>
-        <footer id="pageFooter">Footer</footer>
+        <footer id="pageFooter"></footer>
       </Fragment>
     );
   }

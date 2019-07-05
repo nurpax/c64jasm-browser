@@ -1,4 +1,5 @@
 :root {
+  --header-foreground-color: rgb(221, 221, 221);
   --heading-bottom-margin: 1em;
   --focused-textarea-outline: #888;
   --blurred-textarea-outline: #555;
@@ -7,7 +8,9 @@
   --code-window-line-height: 16px;
   --code-window-height: calc(var(--code-window-line-height)*31);
 
+  --diagnostics-text-color-dim: #777;
   --diagnostics-height: 100px;
+  --diagnostics-item-height: 16px;
 }
 
 body {
@@ -16,7 +19,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background:rgb(37, 37, 38);
+  background:rgb(17, 17, 17);
   color: rgb(173, 173, 173);
   margin: 0px;
 }
@@ -29,7 +32,7 @@ pre {
 #root {
   display: grid;
   grid-template-areas:
-    "header header header pad"
+    "nav header header    pad"
     "nav code disasm      pad"
     "nav diag diag        pad"
     "nav footer footer    pad";
@@ -40,7 +43,7 @@ pre {
   height: 100vh;
   margin: 0;
   }
-header, footer, div#mainCode, nav, div#siteDisasm, div#mainPad {
+header, footer, div#mainCode, header#pageHeader, nav, div#siteDisasm, div#mainPad {
   padding: 1.2em;
   }
 #pageHeader {

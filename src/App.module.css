@@ -1,8 +1,7 @@
-
-.diagnostics {
-    width:100%;
-    height: var(--diagnostics-height);
-    font-size: 1.0em;
-    font-family: monospace;
-    overflow: auto;
+.appTitle {
+    font-family: 'Montserrat', serif;
+    font-size: 2em;
+    font-weight: bold;
+    text-align: center;
+    color: var(--header-foreground-color);
 }

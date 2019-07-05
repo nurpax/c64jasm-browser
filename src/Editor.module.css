@@ -1,5 +1,6 @@
 
 .heading {
+    padding-left: 26px;
     margin-bottom: var(--heading-bottom-margin);
 }
 
