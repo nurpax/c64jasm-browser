@@ -83,6 +83,23 @@ class App extends React.Component<{}, AppState> {
     }
   }
 
+  // If typing in the editor, clear any diagnostics selection
+  handleClearDiagnosticsSelectionOnKey = (e: React.KeyboardEvent) => {
+    if (e.key === 'F4' || e.key === 'Shift') {
+      return;
+    }
+    if (this.state.diagnosticsIndex !== undefined) {
+      this.setState({ diagnosticsIndex: undefined });
+    }
+  }
+
+  // If typing in the editor, clear any diagnostics selection
+  handleClearDiagnosticsSelectionOnMouse = (e: React.MouseEvent) => {
+    if (this.state.diagnosticsIndex !== undefined) {
+      this.setState({ diagnosticsIndex: undefined });
+    }
+  }
+
   render () {
     const diags: Diag[] = this.state.diagnostics;
     let editorErrorLoc = undefined;
@@ -95,7 +112,12 @@ class App extends React.Component<{}, AppState> {
         <header id="pageHeader">
           <div className={styles.appTitle}>Try C64jasm in a Browser!</div>
         </header>
-        <div id="mainCode">
+        <div
+          onKeyDown={this.handleClearDiagnosticsSelectionOnKey}
+          onMouseDown={this.handleClearDiagnosticsSelectionOnMouse}
+          onMouseUp={this.handleClearDiagnosticsSelectionOnMouse}
+          id="mainCode"
+        >
           <Editor
             onSourceChanged={this.handleSetSource}
             diagnostics={this.state.diagnostics}

@@ -4,8 +4,10 @@
   --focused-textarea-outline: #888;
   --blurred-textarea-outline: #555;
 
+  --gutter-width: 20px;
   --gutter-text-color: #777;
   --gutter-text-highlight-color: #fff;
+  --gutter-text-error-color: rgb(255, 122, 122);
   --code-window-line-height: 16px;
   --code-window-height: calc(var(--code-window-line-height)*31);
 
@@ -23,6 +25,12 @@ body {
   background:rgb(17, 17, 17);
   color: rgb(173, 173, 173);
   margin: 0px;
+}
+
+textarea, pre {
+  -moz-tab-size : 4;
+  -o-tab-size : 4;
+   tab-size : 4;
 }
 
 pre {

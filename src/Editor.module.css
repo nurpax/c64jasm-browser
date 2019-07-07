@@ -17,13 +17,26 @@
     flex-direction: row;
 }
 
+.textContainer {
+    position: relative;
+    width: 100%;
+    height: var(--code-window-height);
+    max-height: var(--code-window-height);
+}
+
 .textarea {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+
     padding: 0px;
     line-height: var(--code-window-line-height);
     resize: none;
     outline: none !important;
-    background: rgb(50,50,50);
+
+    background: rgba(0,0,0,0);
     color: rgb(255,255,255);
+
     width:100%;
     height: var(--code-window-height);
     max-height: var(--code-window-height);
@@ -34,9 +47,46 @@
     overflow-y: auto;
 
     border-width: 0px;
+
+    z-index: 10;
 }
 
 .textarea:focus {
+}
+
+.textareaHighlightOverlay {
+    position: absolute;
+
+    display: flex;
+    flex-direction: column;
+
+    resize: none;
+    top: 0px;
+    left: 0px;
+    outline: none !important;
+    padding: 0px;
+    width:100%;
+
+    background: rgb(50,50,50);
+    color: rgb(255,255,255);
+
+    height: var(--code-window-height);
+    max-height: var(--code-window-height);
+    line-height: var(--code-window-line-height);
+
+    overflow-y: hidden;
+    pointer-events: none;
+}
+
+.textareaHighlightRow {
+    width: 100%;
+    min-height: var(--code-window-line-height);
+    height: var(--code-window-line-height);
+}
+
+.textareaHighlightRowCurrent {
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.082);
 }
 
 .gutter {
@@ -44,6 +94,9 @@
     flex-direction: column;
     align-items: flex-end;
     padding-right: 5px;
+
+    width: var(--gutter-width);
+    min-width: var(--gutter-width);
 
     line-height: var(--code-window-line-height);
     height: var(--code-window-height);
@@ -58,4 +111,8 @@
 
 .gutterRowSelected {
     color: var(--gutter-text-highlight-color);
+}
+
+.gutterRowErrored {
+    color: var(--gutter-text-error-color);
 }
