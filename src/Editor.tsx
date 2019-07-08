@@ -123,20 +123,23 @@ export default class extends React.Component<EditorProps, EditorState> {
     }
   }
 
-  componentDidUpdate () {
+  componentDidUpdate (prevProps: EditorProps, prevState: EditorState) {
     if (this.textareaRef && this.textareaRef.current) {
       if (this.props.errorCharOffset !== undefined) {
         this.textareaRef.current.focus();
         this.textareaRef.current.setSelectionRange(this.props.errorCharOffset, this.props.errorCharOffset);
       }
     }
-    const scrollTop = this.state.scrollTop;
-    const vscroll = scrollTop % editorLineHeight;
-    if (this.gutterRef && this.gutterRef.current) {
-      this.gutterRef.current.scrollTop = vscroll;
-    }
-    if (this.highlighterRef && this.highlighterRef.current) {
-      this.highlighterRef.current.scrollTop = vscroll;
+
+    if (prevState.scrollTop !== this.state.scrollTop) {
+      const scrollTop = this.state.scrollTop;
+      const vscroll = scrollTop % editorLineHeight;
+      if (this.gutterRef && this.gutterRef.current) {
+        this.gutterRef.current.scrollTop = vscroll;
+      }
+      if (this.highlighterRef && this.highlighterRef.current) {
+        this.highlighterRef.current.scrollTop = vscroll;
+      }
     }
   }
 
