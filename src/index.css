@@ -45,7 +45,7 @@ pre {
     "nav code disasm      pad"
     "nav diag diag        pad"
     "nav footer footer    pad";
-  grid-template-rows: 80px 1fr 0.3fr 70px;
+  grid-template-rows: 60px 1fr 0.3fr 60px;
   grid-template-columns: 20px 1fr 1fr 20px;
   grid-row-gap: 10px;
   grid-column-gap: 10px;
