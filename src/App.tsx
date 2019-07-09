@@ -10,6 +10,8 @@ import DiagnosticsList from './DiagnosticsList';
 
 import styles from './App.module.css';
 
+const config = { useWebWorkers: true };
+
 interface AppState {
   sourceCode: string;
   disassembly: string[];
@@ -18,6 +20,9 @@ interface AppState {
 };
 
 class App extends React.Component<{}, AppState> {
+
+  assemblerWorker: Worker | undefined = undefined;
+
   state = {
     sourceCode: '',
     disassembly: [],
@@ -27,7 +32,27 @@ class App extends React.Component<{}, AppState> {
 
   componentDidMount () {
     document.addEventListener('keydown', this.handleKeyDown);
+
+    this.assemblerWorker = new Worker('worker.js');
+    if (this.assemblerWorker !== null) {
+      this.assemblerWorker.addEventListener('message', (msg: MessageEvent) => {
+        this.handleWorkerMessage(msg);
+      });
+    }
   }
+
+  handleWorkerMessage = (e: any) => {
+    if (e.data.diagnostics.length === 0) {
+      this.setState({
+        disassembly: e.data.disassembly,
+        diagnostics: e.data.diagnostics,
+      });
+    } else {
+      this.setState({
+        diagnostics: e.data.diagnostics,
+      });
+    }
+  };
 
   handleKeyDown = (e: KeyboardEvent) => {
     if (e.key == 'F4') {
@@ -63,23 +88,31 @@ class App extends React.Component<{}, AppState> {
   }
 
   handleSetSource = (text: string) => {
-    const options = {
-      readFileSync: (fname: string) => text
-    }
-    const res = assembleWithOptions("foo.asm", options);
-    if (res.errors.length === 0) {
+    if (config.useWebWorkers && this.assemblerWorker) {
+      this.assemblerWorker.postMessage({ source: text });
       this.setState({
         sourceCode: text,
-        disassembly: disassemble(res.prg),
-        diagnostics: [],
-        diagnosticsIndex: undefined
-      });
-    } else {
-      this.setState({
-        sourceCode: text,
-        diagnostics: res.errors,
         diagnosticsIndex: undefined
       })
+    } else {
+      const options = {
+        readFileSync: (fname: string) => text
+      }
+      const res = assembleWithOptions("foo.asm", options);
+      if (res.errors.length === 0) {
+        this.setState({
+          sourceCode: text,
+          disassembly: disassemble(res.prg),
+          diagnostics: [],
+          diagnosticsIndex: undefined
+        });
+      } else {
+        this.setState({
+          sourceCode: text,
+          diagnostics: res.errors,
+          diagnosticsIndex: undefined
+        })
+      }
     }
   }
 
