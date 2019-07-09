@@ -15,7 +15,7 @@ const numEditorCharRows = 31;
 interface HighlighterProps {
   startRow: number;
   numRows: number;
-  currentLine: number;
+  currentLine: number | undefined;
 }
 
 const Highlighter = React.forwardRef((props: HighlighterProps, ref: React.Ref<HTMLDivElement>) => {
@@ -24,7 +24,7 @@ const Highlighter = React.forwardRef((props: HighlighterProps, ref: React.Ref<HT
   const padRows = 2;
   for (let i = props.startRow; i < props.startRow + props.numRows + padRows; i++) {
     const str = `${i+1}`;
-    const selected = i == props.currentLine && styles.textareaHighlightRowCurrent;
+    const selected = i === props.currentLine && styles.textareaHighlightRowCurrent;
     rows.push(<div className={cn(styles.textareaHighlightRow, selected)} key={i}> </div>);
   }
   return (
@@ -37,7 +37,8 @@ const Highlighter = React.forwardRef((props: HighlighterProps, ref: React.Ref<HT
 interface GutterProps {
   startRow: number;
   numRows: number;
-  currentLine: number;
+  numTextRows: number;
+  currentLine: number | undefined;
   errorLines: Set<number>;
 }
 
@@ -48,7 +49,8 @@ const Gutter = React.forwardRef((props: GutterProps, ref: React.Ref<HTMLDivEleme
     const str = `${i+1}`;
     const selected = i == props.currentLine && styles.gutterRowSelected;
     const errored = props.errorLines.has(i) && styles.gutterRowErrored;
-    rows.push(<div className={cn(styles.gutterRow, selected, errored)} key={i}>{str.padStart(4, ' ')}</div>);
+    const numStr = (i >= 0 && i < props.numTextRows) ? str.padStart(4, ' ') : '';
+    rows.push(<div className={cn(styles.gutterRow, selected, errored)} key={i}>{numStr}</div>);
   }
   return (
     <div ref={ref} className={styles.gutter}>
@@ -65,20 +67,16 @@ interface EditorProps {
 
 interface EditorState {
   scrollTop: number;
-  cursorLoc: {
-    offset: number,
-    line: number
-  }
+  currentLine: number | undefined;
 }
 
 export default class extends React.Component<EditorProps, EditorState> {
   state = {
     scrollTop: 0,
-    cursorLoc: {
-      offset: 0,
-      line: 0
-    }
+    currentLine: undefined
   }
+
+  numTextareaLines: number = 0;
   textareaRef = React.createRef<HTMLTextAreaElement>();
   gutterRef = React.createRef<HTMLDivElement>();
   highlighterRef = React.createRef<HTMLDivElement>();
@@ -90,18 +88,19 @@ export default class extends React.Component<EditorProps, EditorState> {
 
   handleSourceChanged = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     this.props.onSourceChanged(e.target.value);
+    this.numTextareaLines = e.target.value.split('\n').length;
   }
 
   updateCursorState = () => {
     if (this.textareaRef && this.textareaRef.current) {
-      const loc = this.textareaRef.current.selectionStart;
-      const line = findLine(this.textareaRef.current.value, loc);
-      this.setState({
-        cursorLoc: {
-          offset: loc,
-          line: line !== undefined ? line : 0
-        }
-      })
+      const r = this.textareaRef.current;
+      if (r.selectionStart == r.selectionEnd) {
+        const loc = r.selectionStart;
+        const line = findLine(this.textareaRef.current.value, loc);
+        this.setState({ currentLine: line });
+      } else {
+        this.setState({ currentLine: undefined });
+      }
     }
   }
 
@@ -143,6 +142,15 @@ export default class extends React.Component<EditorProps, EditorState> {
     }
   }
 
+  handleMouseDown = (e: React.MouseEvent) => {
+    if (this.textareaRef && this.textareaRef.current) {
+      const yoffs = e.nativeEvent.offsetY;
+      this.setState({
+        currentLine: Math.min(this.numTextareaLines - 1, Math.floor(yoffs / editorLineHeight))
+      });
+    }
+  }
+
   render () {
     const errorSet = new Set<number>();
     this.props.diagnostics.forEach(({loc}) => {
@@ -157,14 +165,15 @@ export default class extends React.Component<EditorProps, EditorState> {
             ref={this.gutterRef}
             startRow={startCharRow}
             numRows={numEditorCharRows}
-            currentLine={this.state.cursorLoc.line}
+            numTextRows={this.numTextareaLines}
+            currentLine={this.state.currentLine}
             errorLines={errorSet} />
-          <div className={styles.textContainer}>
+          <div className={styles.textContainer} onMouseDown={this.handleMouseDown}>
             <Highlighter
               ref={this.highlighterRef}
               startRow={startCharRow}
               numRows={numEditorCharRows}
-              currentLine={this.state.cursorLoc.line} />
+              currentLine={this.state.currentLine} />
             <textarea
               wrap='off'
               onKeyUp={this.handleKeyUp}
