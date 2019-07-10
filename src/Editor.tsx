@@ -144,7 +144,7 @@ export default class extends React.Component<EditorProps, EditorState> {
 
   handleMouseDown = (e: React.MouseEvent) => {
     if (this.textareaRef && this.textareaRef.current) {
-      const yoffs = e.nativeEvent.offsetY;
+      const yoffs = e.nativeEvent.offsetY + this.state.scrollTop;
       this.setState({
         currentLine: Math.min(this.numTextareaLines - 1, Math.floor(yoffs / editorLineHeight))
       });
