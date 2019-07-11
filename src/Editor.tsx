@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { Fragment } from 'react';
 import indentTextarea from 'indent-textarea';
 import cn from 'classnames';
 
@@ -11,11 +11,97 @@ import styles from './Editor.module.css';
 //console.log(getComputedStyle(document.documentElement).getPropertyValue('--code-window-line-height'));
 const editorLineHeight = 16;
 const numEditorCharRows = 31;
+const tabLength = 4;
+
+// RLE compress a list of T's
+function groupSame<T>(values: T[]): { count: number, code: T }[] {
+  let cur = undefined;
+  let out = [];
+
+  for (let v of values) {
+      // Start new run
+      if (cur !== v) {
+          cur = v;
+          out.push({code: cur, count: 1});
+      } else {
+          // Keep growing current group
+          out[out.length-1].count++;
+      }
+  }
+  return out;
+}
+
+// Count the actual screen char column offset
+// based on a character index and the source code
+// line contents.
+function computeColumn(line: string, charIndex: number) {
+  let col = 0;
+  for (let i = 0; i < charIndex; i++) {
+    if (line.length < i) {
+      return undefined;
+    }
+    if (line[i] === '\t') {
+      col += tabLength;
+    } else {
+      col++;
+    }
+  }
+  return col;
+}
+
+function ErrorSpans(props: {
+  text: string,
+  errors: SourceLoc[]
+}) {
+  let lineLength = 0;
+  for (let c of props.text) {
+    if (c === '\t') {
+      lineLength += tabLength;
+    } else {
+      lineLength++;
+    }
+  }
+  const buf: boolean[] = Array(lineLength).fill(false);
+
+  // The below can return null if it can't find the diagnostic
+  // column from the source code.  This can happen if the
+  // diagnostics are matched on a different version of diagnostics
+  // vs. source code.  This can happen as the compiler
+  // runs in a separate thread while text editing happens
+  // in the main thread without syncing to compiler
+  // results.
+  for (const err of props.errors) {
+    const start = computeColumn(props.text, err.start.column - 1);
+    if (start === undefined) {
+      return null;
+    }
+    const end = err.start.line === err.end.line ? computeColumn(props.text, err.end.column - 1) : start + 1;
+    if (end === undefined) {
+      return null;
+    }
+    for (let x = start; x < end; x++) {
+      buf[x] = true;
+    }
+  }
+  const rled = groupSame(buf);
+  const spans = [];
+  for (let i = 0; i < rled.length; i++) {
+    const span = rled[i];
+    if (!span.code) {
+      spans.push(<pre key={i} style={{display: 'inline'}}>{' '.repeat(span.count)}</pre>);
+    } else {
+      spans.push(<pre key={i} style={{display: 'inline'}} className={styles.highlightError}>{' '.repeat(span.count)}</pre>);
+    }
+  }
+  return <Fragment>{spans}</Fragment>;
+}
 
 interface HighlighterProps {
   startRow: number;
   numRows: number;
   currentLine: number | undefined;
+  textLines: string[];
+  lineToErrors: Map<number, SourceLoc[]>;
 }
 
 const Highlighter = React.forwardRef((props: HighlighterProps, ref: React.Ref<HTMLDivElement>) => {
@@ -23,9 +109,14 @@ const Highlighter = React.forwardRef((props: HighlighterProps, ref: React.Ref<HT
   // Pad rows is required for smooth scrolling (so that there is overflow-y to scroll)
   const padRows = 2;
   for (let i = props.startRow; i < props.startRow + props.numRows + padRows; i++) {
-    const str = `${i+1}`;
     const selected = i === props.currentLine && styles.textareaHighlightRowCurrent;
-    rows.push(<div className={cn(styles.textareaHighlightRow, selected)} key={i}> </div>);
+    const errors = props.lineToErrors.get(i);
+    if (errors) {
+      const text = props.textLines[i];
+      rows.push(<div className={cn(styles.textareaHighlightRow, selected)} key={i}><ErrorSpans text={text} errors={errors} /></div>);
+    } else {
+      rows.push(<div className={cn(styles.textareaHighlightRow, selected)} key={i}> </div>);
+    }
   }
   return (
     <div ref={ref} className={styles.textareaHighlightOverlay}>
@@ -39,7 +130,6 @@ interface GutterProps {
   numRows: number;
   numTextRows: number;
   currentLine: number | undefined;
-  errorLines: Set<number>;
 }
 
 const Gutter = React.forwardRef((props: GutterProps, ref: React.Ref<HTMLDivElement>) => {
@@ -47,10 +137,9 @@ const Gutter = React.forwardRef((props: GutterProps, ref: React.Ref<HTMLDivEleme
   const padRows = 2;
   for (let i = props.startRow; i < props.startRow + props.numRows + padRows; i++) {
     const str = `${i+1}`;
-    const selected = i == props.currentLine && styles.gutterRowSelected;
-    const errored = props.errorLines.has(i) && styles.gutterRowErrored;
+    const selected = i === props.currentLine && styles.gutterRowSelected;
     const numStr = (i >= 0 && i < props.numTextRows) ? str.padStart(4, ' ') : '';
-    rows.push(<div className={cn(styles.gutterRow, selected, errored)} key={i}>{numStr}</div>);
+    rows.push(<div className={cn(styles.gutterRow, selected)} key={i}>{numStr}</div>);
   }
   return (
     <div ref={ref} className={styles.gutter}>
@@ -68,15 +157,16 @@ interface EditorProps {
 interface EditorState {
   scrollTop: number;
   currentLine: number | undefined;
+  textLines: string[];
 }
 
 export default class extends React.Component<EditorProps, EditorState> {
   state = {
     scrollTop: 0,
-    currentLine: undefined
+    currentLine: undefined,
+    textLines: []
   }
 
-  numTextareaLines: number = 0;
   textareaRef = React.createRef<HTMLTextAreaElement>();
   gutterRef = React.createRef<HTMLDivElement>();
   highlighterRef = React.createRef<HTMLDivElement>();
@@ -88,13 +178,15 @@ export default class extends React.Component<EditorProps, EditorState> {
 
   handleSourceChanged = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     this.props.onSourceChanged(e.target.value);
-    this.numTextareaLines = e.target.value.split('\n').length;
+    this.setState({
+      textLines: e.target.value.split('\n')
+    })
   }
 
   updateCursorState = () => {
     if (this.textareaRef && this.textareaRef.current) {
       const r = this.textareaRef.current;
-      if (r.selectionStart == r.selectionEnd) {
+      if (r.selectionStart === r.selectionEnd) {
         const loc = r.selectionStart;
         const line = findLine(this.textareaRef.current.value, loc);
         this.setState({ currentLine: line });
@@ -146,15 +238,18 @@ export default class extends React.Component<EditorProps, EditorState> {
     if (this.textareaRef && this.textareaRef.current) {
       const yoffs = e.nativeEvent.offsetY + this.state.scrollTop;
       this.setState({
-        currentLine: Math.min(this.numTextareaLines - 1, Math.floor(yoffs / editorLineHeight))
+        currentLine: Math.min(this.state.textLines.length - 1, Math.floor(yoffs / editorLineHeight))
       });
     }
   }
 
   render () {
-    const errorSet = new Set<number>();
+    const lineToErrorsMap = new Map<number, SourceLoc[]>();
     this.props.diagnostics.forEach(({loc}) => {
-      errorSet.add(loc.start.line - 1);
+      const line = loc.start.line - 1;
+      const lst = lineToErrorsMap.has(line) ? lineToErrorsMap.get(line)! : [];
+      lst.push(loc);
+      lineToErrorsMap.set(line, lst);
     })
     const startCharRow = Math.floor(this.state.scrollTop / editorLineHeight);
     return (
@@ -165,15 +260,18 @@ export default class extends React.Component<EditorProps, EditorState> {
             ref={this.gutterRef}
             startRow={startCharRow}
             numRows={numEditorCharRows}
-            numTextRows={this.numTextareaLines}
+            numTextRows={this.state.textLines.length}
             currentLine={this.state.currentLine}
-            errorLines={errorSet} />
+          />
           <div className={styles.textContainer} onMouseDown={this.handleMouseDown}>
             <Highlighter
               ref={this.highlighterRef}
               startRow={startCharRow}
               numRows={numEditorCharRows}
-              currentLine={this.state.currentLine} />
+              currentLine={this.state.currentLine}
+              textLines={this.state.textLines}
+              lineToErrors={lineToErrorsMap}
+            />
             <textarea
               wrap='off'
               onKeyUp={this.handleKeyUp}

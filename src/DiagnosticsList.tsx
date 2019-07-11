@@ -61,7 +61,7 @@ export default class DiagnosticsList extends React.Component<DiagnosticsListProp
             <Diagnostic
               key={JSON.stringify(d.loc)}
               index={idx}
-              error={d} selected={idx==this.props.selectedIndex}
+              error={d} selected={idx === this.props.selectedIndex}
               onClickItem={this.handleOnClickItem}
             />
           )

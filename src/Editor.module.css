@@ -59,6 +59,9 @@
 
     display: flex;
     flex-direction: column;
+    font-size: var(--code-window-font-size);
+    font-weight: var(--code-window-font-weight);
+    align-items: flex-start;
 
     resize: none;
     top: 0px;
@@ -82,11 +85,22 @@
     width: 100%;
     min-height: var(--code-window-line-height);
     height: var(--code-window-line-height);
+    line-height: var(--code-window-line-height);
 }
 
 .textareaHighlightRowCurrent {
     width: 100%;
     background-color: rgba(255, 255, 255, 0.082);
+}
+
+.textareaHighlightRow pre {
+    min-height: var(--code-window-line-height);
+    height: var(--code-window-line-height);
+    line-height: var(--code-window-line-height);
+}
+
+.highlightError {
+    background: var(--highlight-error-background-color);
 }
 
 .gutter {
@@ -111,8 +125,4 @@
 
 .gutterRowSelected {
     color: var(--gutter-text-highlight-color);
-}
-
-.gutterRowErrored {
-    color: var(--gutter-text-error-color);
 }

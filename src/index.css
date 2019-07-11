@@ -8,6 +8,11 @@
   --gutter-text-color: #777;
   --gutter-text-highlight-color: #fff;
   --gutter-text-error-color: rgb(255, 122, 122);
+
+  --highlight-error-background-color: rgb(128, 56, 56);
+
+  --code-window-font-size: 13px;
+  --code-window-font-weight: 300;
   --code-window-line-height: 16px;
   --code-window-height: calc(var(--code-window-line-height)*31);
 
@@ -27,10 +32,12 @@ body {
   margin: 0px;
 }
 
-textarea, pre {
+textarea, pre, code {
   -moz-tab-size : 4;
   -o-tab-size : 4;
    tab-size : 4;
+
+   line-height: var(--code-window-line-height);
 }
 
 pre {
@@ -96,7 +103,10 @@ header, footer, div#mainCode, header#pageHeader, nav, div#siteDisasm, div#mainPa
  }
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+pre, code, textarea {
+  font-family: Monaco, Consolas, 'Courier New', monospace;
+/*  font-family: monospace;*/
+  font-size: var(--code-window-font-size);
+  font-weight: var(--code-window-font-weight);
+  padding: 0px;
 }

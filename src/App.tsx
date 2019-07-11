@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 
-import { SourceLoc, assembleWithOptions, disassemble } from 'c64jasm';
+import { assembleWithOptions, disassemble } from 'c64jasm';
 
 import { Diag } from './types'
 import { findCharOffset }  from './editing'
@@ -55,9 +55,9 @@ class App extends React.Component<{}, AppState> {
   };
 
   handleKeyDown = (e: KeyboardEvent) => {
-    if (e.key == 'F4') {
+    if (e.key === 'F4') {
       this.setState((prevState) => {
-        if (prevState.diagnostics.length == 0) {
+        if (prevState.diagnostics.length === 0) {
           return { diagnosticsIndex: 0 };
         }
         if (prevState.diagnosticsIndex === undefined) {
@@ -75,7 +75,7 @@ class App extends React.Component<{}, AppState> {
       })
       e.preventDefault();
     }
-    if (e.key == 'Escape') {
+    if (e.key === 'Escape') {
       this.setState({ diagnosticsIndex: undefined });
       e.preventDefault();
     }
