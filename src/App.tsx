@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 
-import { assembleWithOptions, disassemble } from 'c64jasm';
+import { assemble, disassemble } from 'c64jasm';
 
 import { Diag } from './types'
 import { findCharOffset }  from './editing'
@@ -98,7 +98,7 @@ class App extends React.Component<{}, AppState> {
       const options = {
         readFileSync: (fname: string) => text
       }
-      const res = assembleWithOptions("foo.asm", options);
+      const res = assemble("foo.asm", options);
       if (res.errors.length === 0) {
         this.setState({
           sourceCode: text,

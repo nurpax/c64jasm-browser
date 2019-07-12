@@ -1,14 +1,14 @@
 
-import { assembleWithOptions, disassemble } from 'c64jasm';
+import * as c64jasm from 'c64jasm';
 
 function assemble(text: string) {
   const options = {
     readFileSync: (fname: string) => text
   }
-  const res = assembleWithOptions("foo.asm", options);
+  const res = c64jasm.assemble("foo.asm", options);
   if (res.errors.length === 0) {
     return {
-      disassembly: disassemble(res.prg),
+      disassembly: c64jasm.disassemble(res.prg),
       diagnostics: res.errors
     }
   }
