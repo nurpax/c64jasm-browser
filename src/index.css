@@ -1,21 +1,29 @@
 :root {
   --header-foreground-color: rgb(221, 221, 221);
+/*  --window-group-background: rgb(37, 37, 38);*/
+  --window-group-background: rgb(51, 51, 51);
+  --body-background: var(--window-group-background);
   --heading-bottom-margin: 1em;
   --focused-textarea-outline: #888;
   --blurred-textarea-outline: #555;
 
-  --gutter-width: 20px;
-  --gutter-text-color: #777;
+  --gutter-width: 25px;
+  --gutter-text-color: #999;
   --gutter-text-highlight-color: #fff;
-  --gutter-text-error-color: rgb(255, 122, 122);
 
-  --highlight-error-background-color: rgb(128, 56, 56);
+  --highlight-current-line-color: rgba(40, 84, 109, 0.185);
+  --highlight-error-background-color: rgba(128, 32, 32, 0.5);
 
+  --code-window-text-color: rgb(207, 207, 207);
+  --code-window-background: rgb(30,30,30);
   --code-window-font-size: 13px;
   --code-window-font-weight: 300;
   --code-window-line-height: 16px;
   --code-window-height: calc(var(--code-window-line-height)*31);
 
+  --disasm-window-text-color: var(--code-window-text-color);
+
+  --diagnostics-window-background: var(--code-window-background);
   --diagnostics-text-color-dim: #777;
   --diagnostics-height: 100px;
   --diagnostics-item-height: 16px;
@@ -27,7 +35,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background:rgb(17, 17, 17);
+  background: var(--body-background);
   color: rgb(173, 173, 173);
   margin: 0px;
 }
@@ -59,8 +67,8 @@ pre {
   height: 100vh;
   margin: 0;
   }
-header, footer, div#mainCode, header#pageHeader, nav, div#siteDisasm, div#mainPad {
-  padding: 1.2em;
+header, footer, div#mainCode, header#pageHeader, nav, div#siteDisasm, #mainDiag, div#mainPad {
+  padding: 0.2em;
   }
 #pageHeader {
   grid-area: header;
@@ -70,7 +78,7 @@ header, footer, div#mainCode, header#pageHeader, nav, div#siteDisasm, div#mainPa
   }
 #mainCode {
   grid-area: code;
-  background: rgb(30, 30, 30);
+  background: var(--window-group-background);
   }
 #mainNav {
   grid-area: nav;
@@ -81,11 +89,11 @@ header, footer, div#mainCode, header#pageHeader, nav, div#siteDisasm, div#mainPa
 
 #siteDisasm {
   grid-area: disasm;
-  background: rgb(30, 30, 30);
+  background: var(--window-group-background);
 }
 #mainDiag {
   grid-area: diag;
-  background: rgb(30, 30, 30);
+  background: var(--window-group-background);
 }
 
 /* Stack the layout on small devices/viewports. */

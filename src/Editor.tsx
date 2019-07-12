@@ -88,9 +88,9 @@ function ErrorSpans(props: {
   for (let i = 0; i < rled.length; i++) {
     const span = rled[i];
     if (!span.code) {
-      spans.push(<pre key={i} style={{display: 'inline'}}>{' '.repeat(span.count)}</pre>);
+      spans.push(<pre key={i} style={{display: 'inline-block'}}>{' '.repeat(span.count)}</pre>);
     } else {
-      spans.push(<pre key={i} style={{display: 'inline'}} className={styles.highlightError}>{' '.repeat(span.count)}</pre>);
+      spans.push(<pre key={i} style={{display: 'inline-block'}} className={styles.highlightError}>{' '.repeat(span.count)}</pre>);
     }
   }
   return <Fragment>{spans}</Fragment>;
@@ -115,7 +115,7 @@ const Highlighter = React.forwardRef((props: HighlighterProps, ref: React.Ref<HT
       const text = props.textLines[i];
       rows.push(<div className={cn(styles.textareaHighlightRow, selected)} key={i}><ErrorSpans text={text} errors={errors} /></div>);
     } else {
-      rows.push(<div className={cn(styles.textareaHighlightRow, selected)} key={i}> </div>);
+      rows.push(<div className={cn(styles.textareaHighlightRow, selected)} key={i}></div>);
     }
   }
   return (

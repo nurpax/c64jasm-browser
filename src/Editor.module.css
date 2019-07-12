@@ -35,7 +35,7 @@
     outline: none !important;
 
     background: rgba(0,0,0,0);
-    color: rgb(255,255,255);
+    color: var(--code-window-text-color);
 
     width:100%;
     height: var(--code-window-height);
@@ -70,7 +70,7 @@
     padding: 0px;
     width:100%;
 
-    background: rgb(50,50,50);
+    background: var(--code-window-background);
     color: rgb(255,255,255);
 
     height: var(--code-window-height);
@@ -86,11 +86,14 @@
     min-height: var(--code-window-line-height);
     height: var(--code-window-line-height);
     line-height: var(--code-window-line-height);
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
 }
 
 .textareaHighlightRowCurrent {
     width: 100%;
-    background-color: rgba(255, 255, 255, 0.082);
+    background-color: var(--highlight-current-line-color);
 }
 
 .textareaHighlightRow pre {
@@ -107,10 +110,11 @@
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    padding-right: 5px;
+    overflow-x: hidden;
 
-    width: var(--gutter-width);
-    min-width: var(--gutter-width);
+    padding-right: 5px;
+    width: calc(var(--gutter-width) - 5px);
+    min-width: calc(var(--gutter-width) - 5px);
 
     line-height: var(--code-window-line-height);
     height: var(--code-window-height);

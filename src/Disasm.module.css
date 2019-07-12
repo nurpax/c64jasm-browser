@@ -9,19 +9,10 @@
     flex-direction: column;
 }
 .disasmContainer {
+    background: var(--code-window-background);
     width:100%;
     height: var(--code-window-height);
     max-height: var(--code-window-height);
     overflow-y: auto;
-}
-.disasm {
-    outline: none !important;
-    background: rgb(50,50,50);
-    color: rgb(255,255,255);
-    width:100%;
-    height:100%;
-    box-sizing: border-box;         /* For IE and modern versions of Chrome */
-    -moz-box-sizing: border-box;    /* For Firefox                          */
-    -webkit-box-sizing: border-box; /* For Safari                           */
-    border-color: var(--blurred-textarea-outline);
+    color: var(--disasm-window-text-color);
 }
