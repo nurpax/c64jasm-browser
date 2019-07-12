@@ -1,17 +1,17 @@
 
 .diagnostics {
-    height: var(--diagnostics-height);
     width: 100%;
     font-size: 1.0em;
     font-family: monospace;
-    overflow: hidden;
+    overflow-x: hidden;
 }
 
 .diagnosticsBox {
+    height: var(--diagnostics-height);
     margin-left: var(--gutter-width);
     width: 100%;
-    height: var(--diagnostics-height);
     background: var(--diagnostics-window-background);
+    overflow-y: auto;
 }
 
 .diagItem {

@@ -49,11 +49,21 @@ function computeColumn(line: string, charIndex: number) {
   return col;
 }
 
+// This function can return null if it can't find the diagnostic
+// column from the source code.  This can happen if the
+// diagnostics are matched on a different version of diagnostics
+// vs. source code.  This can happen as the compiler
+// runs in a separate thread while text editing happens
+// in the main thread without syncing to compiler
+// results.
 function ErrorSpans(props: {
   text: string,
   errors: SourceLoc[]
 }) {
   let lineLength = 0;
+  if (!props.text) {
+    return null;
+  }
   for (let c of props.text) {
     if (c === '\t') {
       lineLength += tabLength;
@@ -63,13 +73,6 @@ function ErrorSpans(props: {
   }
   const buf: boolean[] = Array(lineLength).fill(false);
 
-  // The below can return null if it can't find the diagnostic
-  // column from the source code.  This can happen if the
-  // diagnostics are matched on a different version of diagnostics
-  // vs. source code.  This can happen as the compiler
-  // runs in a separate thread while text editing happens
-  // in the main thread without syncing to compiler
-  // results.
   for (const err of props.errors) {
     const start = computeColumn(props.text, err.start.column - 1);
     if (start === undefined) {

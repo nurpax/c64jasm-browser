@@ -4,8 +4,6 @@
   --window-group-background: rgb(51, 51, 51);
   --body-background: var(--window-group-background);
   --heading-bottom-margin: 1em;
-  --focused-textarea-outline: #888;
-  --blurred-textarea-outline: #555;
 
   --gutter-width: 25px;
   --gutter-text-color: #999;
@@ -24,7 +22,6 @@
   --disasm-window-text-color: var(--code-window-text-color);
 
   --diagnostics-window-background: var(--code-window-background);
-  --diagnostics-text-color-dim: #777;
   --diagnostics-height: 100px;
   --diagnostics-item-height: 16px;
 }
