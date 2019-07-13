@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/c64jasm-browser/static/css/main.ada58b06.chunk.css",
+    "main.js": "/c64jasm-browser/static/js/main.a1597aef.chunk.js",
+    "main.js.map": "/c64jasm-browser/static/js/main.a1597aef.chunk.js.map",
+    "runtime~main.js": "/c64jasm-browser/static/js/runtime~main.9ccd4be7.js",
+    "runtime~main.js.map": "/c64jasm-browser/static/js/runtime~main.9ccd4be7.js.map",
+    "static/js/2.e13d6693.chunk.js": "/c64jasm-browser/static/js/2.e13d6693.chunk.js",
+    "static/js/2.e13d6693.chunk.js.map": "/c64jasm-browser/static/js/2.e13d6693.chunk.js.map",
+    "index.html": "/c64jasm-browser/index.html",
+    "precache-manifest.bb53f90d1f107566cff399029338fcc4.js": "/c64jasm-browser/precache-manifest.bb53f90d1f107566cff399029338fcc4.js",
+    "service-worker.js": "/c64jasm-browser/service-worker.js",
+    "static/css/main.ada58b06.chunk.css.map": "/c64jasm-browser/static/css/main.ada58b06.chunk.css.map"
+  }
+}
