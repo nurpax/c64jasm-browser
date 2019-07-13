@@ -59,29 +59,39 @@ pre {
     "nav code disasm      pad"
     "nav diag diag        pad"
     "nav footer footer    pad";
-  grid-template-rows: 60px 1fr 0.3fr 60px;
-  grid-template-columns: 20px 1fr 1fr 20px;
+  grid-template-rows: 60px 1fr 0.4fr 60px;
+  grid-template-columns: 0.1fr 1fr 1fr 0.1fr;
   grid-row-gap: 10px;
   grid-column-gap: 10px;
   height: 100vh;
   margin: 0;
-  }
+}
+
 header, footer, div#mainCode, header#pageHeader, nav, div#siteDisasm, #mainDiag, div#mainPad {
   padding: 0.2em;
-  }
+}
+
 #pageHeader {
   grid-area: header;
-  }
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+}
+
 #pageFooter {
   grid-area: footer;
-  }
+}
+
 #mainCode {
   grid-area: code;
   background: var(--window-group-background);
-  }
+}
+
 #mainNav {
   grid-area: nav;
-  }
+}
+
 #mainPad {
   grid-area: pad;
 }
@@ -90,6 +100,7 @@ header, footer, div#mainCode, header#pageHeader, nav, div#siteDisasm, #mainDiag,
   grid-area: disasm;
   background: var(--window-group-background);
 }
+
 #mainDiag {
   grid-area: diag;
   background: var(--window-group-background);
@@ -116,4 +127,8 @@ pre, code, textarea {
   font-size: var(--code-window-font-size);
   font-weight: var(--code-window-font-weight);
   padding: 0px;
+}
+
+a, a:visited {
+  color: var(--header-foreground-color);
 }

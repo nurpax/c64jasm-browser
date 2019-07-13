@@ -1,15 +1,28 @@
 
-.diagnostics {
-    width: 100%;
-    font-size: 1.0em;
-    font-family: monospace;
-    overflow-x: hidden;
-    box-shadow: var(--window-drop-shadow);
+.layoutContainer {
+    width:100%;
+    height:100%;
+    display: flex;
+    flex-direction: column;
 }
 
+.diagnostics {
+    width: 100%;
+    overflow-x: hidden;
+    box-shadow: var(--window-drop-shadow);
+
+    display: flex;
+    flex-direction: column;
+}
+
+.heading {
+    margin-bottom: var(--heading-bottom-margin);
+ }
+
 .diagnosticsBox {
+    font-size: 1.0em;
+    font-family: monospace;
     height: var(--diagnostics-height);
-    left: var(--gutter-width);
     width: 100%;
     background: var(--diagnostics-window-background);
     overflow-y: auto;

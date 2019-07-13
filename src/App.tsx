@@ -158,7 +158,7 @@ class App extends React.Component<{}, AppState> {
     return (
       <Fragment>
         <header id="pageHeader">
-          <div className={styles.appTitle}>Try C64jasm in a Browser!</div>
+          <div className={styles.appTitle}>Try <a href='https://nurpax.github.io/c64jasm/'>c64jasm</a> in a Browser</div>
         </header>
         <div
           onKeyDown={this.handleClearDiagnosticsSelectionOnKey}

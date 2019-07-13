@@ -55,18 +55,21 @@ export default class DiagnosticsList extends React.Component<DiagnosticsListProp
   render() {
     const diags = this.props.diagnostics;
     return (
-      <div className={styles.diagnostics}>
-        <div className={styles.diagnosticsBox}>
-          {diags.map((d: Diag, idx) => {
-            return (
-              <Diagnostic
-                key={JSON.stringify(d.loc)}
-                index={idx}
-                error={d} selected={idx === this.props.selectedIndex}
-                onClickItem={this.handleOnClickItem}
-              />
-            )
-          })}
+      <div className={styles.layoutContainer}>
+        <div className={styles.heading}>Diagnostics</div>
+        <div className={styles.diagnostics}>
+          <div className={styles.diagnosticsBox}>
+            {diags.map((d: Diag, idx) => {
+              return (
+                <Diagnostic
+                  key={JSON.stringify(d.loc)}
+                  index={idx}
+                  error={d} selected={idx === this.props.selectedIndex}
+                  onClickItem={this.handleOnClickItem}
+                />
+              )
+            })}
+          </div>
         </div>
       </div>
     )

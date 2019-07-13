@@ -1,6 +1,5 @@
 
 .heading {
-    padding-left: 26px;
     margin-bottom: var(--heading-bottom-margin);
 }
 
@@ -10,6 +9,7 @@
     display: flex;
     flex-direction: column;
 }
+
 .editorContainer {
     width:100%;
     height:100%;
@@ -17,7 +17,7 @@
     flex-direction: row;
 }
 
-.textContainer {
+.editorContainer {
     position: relative;
     width: 100%;
     height: var(--code-window-height);
@@ -111,9 +111,10 @@
     align-items: flex-end;
     overflow-x: hidden;
 
-    padding-right: 5px;
-    width: calc(var(--gutter-width) - 5px);
-    min-width: calc(var(--gutter-width) - 5px);
+    transform: translateX(calc(-1*var(--gutter-width) - 3px));
+
+    width: calc(var(--gutter-width));
+    min-width: calc(var(--gutter-width));
 
     line-height: var(--code-window-line-height);
     height: var(--code-window-height);
