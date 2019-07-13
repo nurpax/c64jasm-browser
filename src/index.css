@@ -67,10 +67,10 @@ pre {
     "nav code disasm"
     "nav diag diag";
   grid-template-rows: auto auto;/* 1fr 0.3fr;*/
-  grid-template-columns: 1fr 1.5fr 1.5fr;
+  grid-template-columns: 240px 1fr 1fr;
   grid-row-gap: 10px;
   grid-column-gap: 10px;
-  width: 75%;
+  width: 90%;
   margin: 0;
 }
 
@@ -94,7 +94,7 @@ header, div#mainCode, header#pageHeader, nav, div#siteDisasm, #mainDiag, div#mai
 #mainNav {
   grid-area: nav;
   text-align: left;
-  margin-right: 2em;
+  margin-right: 1em;
 
   display: flex;
   flex-direction: row;
