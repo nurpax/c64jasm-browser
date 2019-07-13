@@ -156,10 +156,14 @@ class App extends React.Component<{}, AppState> {
       editorErrorLoc = findCharOffset(this.state.sourceCode, d.loc);
     }
     return (
-      <Fragment>
-        <header id="pageHeader">
-          <div className={styles.appTitle}>Try <a href='https://nurpax.github.io/c64jasm/'>c64jasm</a> in a Browser</div>
-        </header>
+      <div id='root'>
+        <nav id="mainNav">
+          <div className={styles.navContainer}>
+            <div className={styles.appTitle}><a href='https://nurpax.github.io/c64jasm/'>c64jasm</a> online</div>
+            <p>A little experimental 6502 assembler for the C64</p>
+            <p>👉 <a href='https://github.com/nurpax/c64jasm-browser'>source code</a></p>
+          </div>
+        </nav>
         <div
           onKeyDown={this.handleClearDiagnosticsSelectionOnKey}
           onMouseDown={this.handleClearDiagnosticsSelectionOnMouse}
@@ -181,8 +185,7 @@ class App extends React.Component<{}, AppState> {
             diagnostics={this.state.diagnostics}
             selectedIndex={this.state.diagnosticsIndex} />
         </div>
-        <footer id="pageFooter"></footer>
-      </Fragment>
+      </div>
     );
   }
 }
