@@ -24,6 +24,8 @@
   --diagnostics-window-background: var(--code-window-background);
   --diagnostics-height: 100px;
   --diagnostics-item-height: 16px;
+
+  --window-drop-shadow: 1.5px 1.5px 2px 0px rgba(0, 0, 0, 0.3);
 }
 
 body {

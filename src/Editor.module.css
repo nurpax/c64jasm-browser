@@ -22,6 +22,8 @@
     width: 100%;
     height: var(--code-window-height);
     max-height: var(--code-window-height);
+
+    box-shadow: var(--window-drop-shadow);
 }
 
 .textarea {

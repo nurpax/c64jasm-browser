@@ -10,6 +10,14 @@ import DiagnosticsList from './DiagnosticsList';
 
 import styles from './App.module.css';
 
+export function debounce<F extends (...params: any[]) => void>(fn: F, delay: number) {
+  let timeoutID: number|undefined = undefined;
+  return function(this: any, ...args: any[]) {
+    clearTimeout(timeoutID);
+    timeoutID = window.setTimeout(() => fn.apply(this, args), delay);
+  } as F;
+}
+
 const config = { useWebWorkers: true };
 
 interface AppState {
@@ -87,9 +95,16 @@ class App extends React.Component<{}, AppState> {
     })
   }
 
+  debouncedCompile = debounce((asmArgs: any) => {
+    if (config.useWebWorkers && this.assemblerWorker) {
+      this.assemblerWorker.postMessage(asmArgs);
+    }
+  }, 250);
+
   handleSetSource = (text: string) => {
     if (config.useWebWorkers && this.assemblerWorker) {
-      this.assemblerWorker.postMessage({ source: text });
+      //this.assemblerWorker.postMessage({ source: text });
+      this.debouncedCompile({ source: text });
       this.setState({
         sourceCode: text,
         diagnosticsIndex: undefined

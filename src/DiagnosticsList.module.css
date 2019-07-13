@@ -4,11 +4,12 @@
     font-size: 1.0em;
     font-family: monospace;
     overflow-x: hidden;
+    box-shadow: var(--window-drop-shadow);
 }
 
 .diagnosticsBox {
     height: var(--diagnostics-height);
-    margin-left: var(--gutter-width);
+    left: var(--gutter-width);
     width: 100%;
     background: var(--diagnostics-window-background);
     overflow-y: auto;
