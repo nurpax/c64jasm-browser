@@ -214,6 +214,7 @@ export default class extends React.Component<EditorProps, EditorState> {
     if (this.textareaRef && this.textareaRef.current) {
       indentTextarea.watch(this.textareaRef.current);
       this.textareaRef.current.spellcheck = false;
+      this.textareaRef.current.focus();
     }
   }
 
