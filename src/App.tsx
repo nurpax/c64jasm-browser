@@ -4,9 +4,11 @@ import { assemble, disassemble } from 'c64jasm';
 
 import { Diag } from './types'
 import { findCharOffset }  from './editing'
+
 import Editor from './Editor';
 import Disasm from './Disasm';
 import DiagnosticsList from './DiagnosticsList';
+import Help from './Help'
 
 import styles from './App.module.css';
 
@@ -25,6 +27,7 @@ interface AppState {
   disassembly: string[];
   diagnosticsIndex: number | undefined;
   diagnostics: Diag[];
+  helpVisible: boolean;
 };
 
 class App extends React.Component<{}, AppState> {
@@ -35,7 +38,8 @@ class App extends React.Component<{}, AppState> {
     sourceCode: '',
     disassembly: [],
     diagnosticsIndex: 0,
-    diagnostics: []
+    diagnostics: [],
+    helpVisible: false
   }
 
   componentDidMount () {
@@ -84,7 +88,12 @@ class App extends React.Component<{}, AppState> {
       e.preventDefault();
     }
     if (e.key === 'Escape') {
-      this.setState({ diagnosticsIndex: undefined });
+      // Clear focus from diagnostics list and
+      // exit help if it happens to be visible.
+      this.setState({
+        diagnosticsIndex: undefined,
+        helpVisible: false
+      });
       e.preventDefault();
     }
   }
@@ -148,6 +157,15 @@ class App extends React.Component<{}, AppState> {
     }
   }
 
+  handleClickHelp = (e: React.MouseEvent) => {
+    e.preventDefault();
+    this.setState({ helpVisible: true });
+  }
+
+  handleCloseHelp = () => {
+    this.setState({ helpVisible: false });
+  }
+
   render () {
     const diags: Diag[] = this.state.diagnostics;
     let editorErrorLoc = undefined;
@@ -161,6 +179,7 @@ class App extends React.Component<{}, AppState> {
           <div className={styles.navContainer}>
             <div className={styles.appTitle}><a href='https://nurpax.github.io/c64jasm/'>c64jasm</a> online</div>
             <p>A little experimental 6502 assembler for the C64</p>
+            <p>👉 <a onClick={this.handleClickHelp} href='#'>help</a></p>
             <p>👉 <a href='https://github.com/nurpax/c64jasm-browser'>source code</a></p>
           </div>
         </nav>
@@ -185,6 +204,7 @@ class App extends React.Component<{}, AppState> {
             diagnostics={this.state.diagnostics}
             selectedIndex={this.state.diagnosticsIndex} />
         </div>
+        <Help visible={this.state.helpVisible} onClose={this.handleCloseHelp} />
       </div>
     );
   }

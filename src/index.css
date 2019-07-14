@@ -131,7 +131,6 @@ header, div#mainCode, header#pageHeader, nav, div#siteDisasm, #mainDiag, div#mai
 
 pre, code, textarea {
   font-family: Monaco, Consolas, 'Courier New', monospace;
-/*  font-family: monospace;*/
   font-size: var(--code-window-font-size);
   font-weight: var(--code-window-font-weight);
   padding: 0px;
