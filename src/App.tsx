@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 
 import { assemble, disassemble } from 'c64jasm';
 
