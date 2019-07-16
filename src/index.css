@@ -12,12 +12,13 @@
   --highlight-current-line-color: rgba(40, 84, 109, 0.185);
   --highlight-error-background-color: rgba(128, 32, 32, 0.5);
 
+  --code-window-num-lines: 25;
   --code-window-text-color: rgb(207, 207, 207);
   --code-window-background: rgb(30,30,30);
   --code-window-font-size: 13px;
   --code-window-font-weight: 300;
   --code-window-line-height: 16px;
-  --code-window-height: calc(var(--code-window-line-height)*31);
+  --code-window-height: calc(var(--code-window-line-height)*var(--code-window-num-lines));
 
   --disasm-window-text-color: var(--code-window-text-color);
 

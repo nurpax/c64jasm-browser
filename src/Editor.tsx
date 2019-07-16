@@ -7,10 +7,6 @@ import { findLine } from './editing';
 import { SourceLoc } from 'c64jasm';
 import styles from './Editor.module.css';
 
-// TODO get these values from CSS variables
-//console.log(getComputedStyle(document.documentElement).getPropertyValue('--code-window-line-height'));
-const editorLineHeight = 16;
-const numEditorCharRows = 31;
 const tabLength = 4;
 
 // RLE compress a list of T's
@@ -164,10 +160,31 @@ interface EditorState {
 }
 
 export default class extends React.Component<EditorProps, EditorState> {
-  state = {
-    scrollTop: 0,
-    currentLine: undefined,
-    textLines: []
+
+  private editorLineHeight = 0;
+  private numEditorCharRows = 0;
+
+  constructor (props: EditorProps) {
+    super(props);
+
+    this.state = {
+      scrollTop: 0,
+      currentLine: undefined,
+      textLines: []
+    }
+
+    const cssVarLineHeight = getComputedStyle(document.documentElement).getPropertyValue('--code-window-line-height');
+    let match = /^[ ]*(?<height>[0-9]+)px$/.exec(cssVarLineHeight);
+    if (!match) {
+      throw new Error('failed querying css var --code-window-line-height' + cssVarLineHeight);
+    }
+    this.editorLineHeight = parseInt((match as any).groups.height);
+    const cssNumLines = getComputedStyle(document.documentElement).getPropertyValue('--code-window-num-lines');
+    match = /^[ ]*(?<lines>[0-9]+)$/.exec(cssNumLines);
+    if (!match) {
+      throw new Error('failed querying css var --code-window-num-lines');
+    }
+    this.numEditorCharRows = parseInt((match as any).groups.lines);
   }
 
   textareaRef = React.createRef<HTMLTextAreaElement>();
@@ -228,7 +245,7 @@ export default class extends React.Component<EditorProps, EditorState> {
 
     if (prevState.scrollTop !== this.state.scrollTop) {
       const scrollTop = this.state.scrollTop;
-      const vscroll = scrollTop % editorLineHeight;
+      const vscroll = scrollTop % this.editorLineHeight;
       if (this.gutterRef && this.gutterRef.current) {
         this.gutterRef.current.scrollTop = vscroll;
       }
@@ -242,7 +259,7 @@ export default class extends React.Component<EditorProps, EditorState> {
     if (this.textareaRef && this.textareaRef.current) {
       const yoffs = e.nativeEvent.offsetY + this.state.scrollTop;
       this.setState({
-        currentLine: Math.min(this.state.textLines.length - 1, Math.floor(yoffs / editorLineHeight))
+        currentLine: Math.min(this.state.textLines.length - 1, Math.floor(yoffs / this.editorLineHeight))
       });
     }
   }
@@ -255,7 +272,7 @@ export default class extends React.Component<EditorProps, EditorState> {
       lst.push(loc);
       lineToErrorsMap.set(line, lst);
     })
-    const startCharRow = Math.floor(this.state.scrollTop / editorLineHeight);
+    const startCharRow = Math.floor(this.state.scrollTop / this.editorLineHeight);
     return (
       <div className={styles.layoutContainer}>
         <div className={styles.heading}>Assembly</div>
@@ -263,7 +280,7 @@ export default class extends React.Component<EditorProps, EditorState> {
           <Gutter
             ref={this.gutterRef}
             startRow={startCharRow}
-            numRows={numEditorCharRows}
+            numRows={this.numEditorCharRows}
             numTextRows={this.state.textLines.length}
             currentLine={this.state.currentLine}
           />
@@ -271,7 +288,7 @@ export default class extends React.Component<EditorProps, EditorState> {
             <Highlighter
               ref={this.highlighterRef}
               startRow={startCharRow}
-              numRows={numEditorCharRows}
+              numRows={this.numEditorCharRows}
               currentLine={this.state.currentLine}
               textLines={this.state.textLines}
               lineToErrors={lineToErrorsMap}

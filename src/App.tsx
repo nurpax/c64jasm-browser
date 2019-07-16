@@ -22,6 +22,10 @@ export function debounce<F extends (...params: any[]) => void>(fn: F, delay: num
 
 const config = { useWebWorkers: true };
 
+function Emoji(props: {emoji: string}) {
+  return <span aria-label='emoji' role='img'>{props.emoji}</span>
+}
+
 interface AppState {
   sourceCode: string;
   disassembly: string[];
@@ -179,8 +183,8 @@ class App extends React.Component<{}, AppState> {
           <div className={styles.navContainer}>
             <div className={styles.appTitle}><a href='https://nurpax.github.io/c64jasm/'>c64jasm</a> online</div>
             <p>A little experimental 6502 assembler for the C64</p>
-            <p>👉 <a onClick={this.handleClickHelp} href='#'>help</a></p>
-            <p>👉 <a href='https://github.com/nurpax/c64jasm-browser'>source code</a></p>
+            <p><Emoji emoji='👉' /> <a onClick={this.handleClickHelp} href='/' target='_blank'>help</a></p>
+            <p><Emoji emoji='👉' /> <a href='https://github.com/nurpax/c64jasm-browser'>source code</a></p>
           </div>
         </nav>
         <div

@@ -52,7 +52,6 @@ function Emph(props: { children: JSX.Element | string}) {
 // assembly code written in string literals.
 function trimLineFeeds(str: string): string {
   const lines = str.split('\n');
-  const res = [];
   let s;
   for (s = 0; s < lines.length; s++) {
     const line = lines[s].trim();
