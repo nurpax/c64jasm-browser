@@ -27,6 +27,8 @@
   --diagnostics-item-height: 16px;
 
   --window-drop-shadow: 1.5px 1.5px 3px 0px rgba(0, 0, 0, 0.3);
+
+  --help-emph-color: rgb(218, 49, 28);
 }
 
 body {

@@ -43,10 +43,6 @@ class Modal extends React.Component {
   }
 }
 
-function Emph(props: { children: JSX.Element | string}) {
-  return <span className={styles.emph}>{props.children}</span>;
-}
-
 // Remove leading and trailing line feeds from a string.
 // This is to prevent unnecessary line feeds in
 // assembly code written in string literals.
@@ -85,21 +81,77 @@ class HelpContents extends React.Component<{onClose: () => void}> {
           <h1>c64jasm online </h1>
         </div>
         <p>
-          <Emph>c64jasm</Emph> is an experimental 6502 assembler written in JavaScript.  It can
-          run both in the browser and on the command line (using Node).
+          <a href='https://nurpax.github.io/c64jasm/'>c64jasm</a> is a 6502 assembler written in JavaScript.
+          You can run it either on the command line using Node or link it into a web app.
         </p>
         <p>
-          <Emph>c64jasm online</Emph> is an interactive assembler demo site
+          <a href='https://nurpax.github.io/c64jasm-browser/'>c64jasm online</a> is an interactive assembler demo site
           where you can write 6502 assembly with live error reporting and disassembly.
         </p>
 
-        <p>
-          Example code:
-        </p>
+        <h3>Examples</h3>
 
+        <p>Simple instructions and expressions:</p>
         <AsmBlock text={`
-    lda #13
+    lda #2+2  ; expression in an immediate field
+    sta $d020 ; set border color
+        `} />
+
+        <p>Labels:</p>
+        <AsmBlock text={`
+entry: {
+    jsr func
+
+    ldx #8
+loop: ; label local to 'entry' scope
+    dex
+    bpl loop
+}
+
+func: {
+    ldx #7
+loop: ; label local to 'func' scope
+    sta buf, x   ; store to buf
+    dex
+    bpl loop
+    rts
+
+buf: !fill 8, 0    ; 8 byte array
+}
+        `} />
+
+        <p>Declaring and using variables:</p>
+        <AsmBlock text={`
+!let num_sprites = 4
+!let sprite_mask = (1<<num_sprites)-1
+
+    lda #sprite_mask
+    sta $d015 ; enable sprites 0-3
+        `} />
+
+        <p>Conditional compilation and repetition:</p>
+        <AsmBlock text={`
+!let num_sprites = 4
+    lda #13  ; ptr to sprite data 1 (==address/64)
+    lda #14  ; ptr to sprite data 2
+
+!for i in range(num_sprites) {
+    !if (i < 2) {
+        sta $07f8+i   ; sprite data 1 from A
+    } else {
+        stx $07f8+i   ; sprite data 2 from X
+    }
+}
+        `} />
+
+        <p>Define and use macro macro:</p>
+        <AsmBlock text={`
+!macro set_border(color) {
+    lda #color
     sta $d020
+}
+
++set_border(13)  ; expand
         `} />
 
       </div>

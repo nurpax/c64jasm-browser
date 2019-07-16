@@ -4,14 +4,17 @@
   left: 0px;
   top: 0px;
   width: 100vw;
-  height: 100vh;
+  min-height: 100vh;
   z-index: 20;
 }
 
 .helpContents {
   height: 100%;
 
+  line-height: 1.5;
   color: rgb(75, 75, 75);
+
+  padding-bottom: 3em;
 }
 
 .headingContainer {
@@ -30,11 +33,16 @@
 }
 
 .emph {
-  color: rgb(218, 49, 28);
+  color: var(--help-emph-color);
+}
+
+.helpContents a {
+  color: var(--help-emph-color);
 }
 
 .hidden {
   display: none;
+  background: rgba(0,0,0,0);
 }
 
 .circleReveal {
@@ -44,7 +52,7 @@
   animation: circle 0.4s 1;
   animation-fill-mode: forwards;
   animation-timing-function: linear;
-  clip-path: circle(0%);
+  clip-path: circle(0% at calc(100vw/2) calc(100vh/2));
 
   background: rgb(230, 230, 230);
 
@@ -55,8 +63,8 @@
 }
 
 @keyframes circle {
-  0% { clip-path: circle(0%); }
-  100% { clip-path: circle(100%); }
+  0% { clip-path: circle(0% at calc(100vw/2) calc(100vh/2)); }
+  100% { clip-path: circle(100% at calc(100vw/2) calc(100vh/2)); }
 }
 
 .maxWidth {
