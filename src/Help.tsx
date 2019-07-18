@@ -133,7 +133,7 @@ buf: !fill 8, 0    ; 8 byte array
         <AsmBlock text={`
 !let num_sprites = 4
     lda #13  ; ptr to sprite data 1 (==address/64)
-    lda #14  ; ptr to sprite data 2
+    ldx #14  ; ptr to sprite data 2
 
 !for i in range(num_sprites) {
     !if (i < 2) {
