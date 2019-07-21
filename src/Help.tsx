@@ -4,6 +4,7 @@ import cn from 'classnames';
 
 import CloseButton from './CloseButton'
 import styles from './Help.module.css';
+import * as asmBuiltins from './asmBuiltins';
 
 const modalRoot = document.getElementById('modal-root')!;
 
@@ -153,6 +154,29 @@ buf: !fill 8, 0    ; 8 byte array
 
 +set_border(13)  ; expand
         `} />
+
+        <p>A complete C64 program.  To compile a C64 <code>.prg</code> you need
+        to insert a BASIC startup sequence at the beginning of your output <code>.prg</code> --
+        you can use the <code>c64::basic_entry</code> macro to do this.
+        The source code to these macros is shown in a later section.
+        </p>
+
+        <AsmBlock text={`
+!include "c64.asm"
+
++c64::basic_start(entry)
+
+entry: {
+    lda #0
+}
+        `} />
+
+        <h3>Built-in support macros</h3>
+
+        <p>The c64jasm online site comes with a small macro library.  You can find their source code below.</p>
+
+        <p>The builtin <code>c64.asm</code> contents:</p>
+        <AsmBlock text={asmBuiltins.c64} />
 
       </div>
     )

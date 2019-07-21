@@ -2,13 +2,14 @@ import React from 'react';
 
 import { assemble, disassemble } from 'c64jasm';
 
-import { Diag } from './types'
-import { findCharOffset }  from './editing'
+import { Diag } from './types';
+import * as asmBuiltins from './asmBuiltins';
+import { findCharOffset }  from './editing';
 
 import Editor from './Editor';
 import Disasm from './Disasm';
 import DiagnosticsList from './DiagnosticsList';
-import Help from './Help'
+import Help from './Help';
 
 import styles from './App.module.css';
 
@@ -29,6 +30,7 @@ function Emoji(props: {emoji: string}) {
 interface AppState {
   sourceCode: string;
   disassembly: string[];
+  prg: Buffer;
   diagnosticsIndex: number | undefined;
   diagnostics: Diag[];
   helpVisible: boolean;
@@ -41,6 +43,7 @@ class App extends React.Component<{}, AppState> {
   state = {
     sourceCode: '',
     disassembly: [],
+    prg: Buffer.from([]),
     diagnosticsIndex: 0,
     diagnostics: [],
     helpVisible: false
@@ -60,6 +63,7 @@ class App extends React.Component<{}, AppState> {
   handleWorkerMessage = (e: any) => {
     if (e.data.diagnostics.length === 0) {
       this.setState({
+        prg: e.data.prg,
         disassembly: e.data.disassembly,
         diagnostics: e.data.diagnostics,
       });
@@ -115,21 +119,31 @@ class App extends React.Component<{}, AppState> {
   }, 250);
 
   handleSetSource = (text: string) => {
+    const sourceFileMap: {[ndx: string]: string} = {
+      "main.asm": text,
+      "c64.asm": asmBuiltins.c64
+    };
+
     if (config.useWebWorkers && this.assemblerWorker) {
-      //this.assemblerWorker.postMessage({ source: text });
-      this.debouncedCompile({ source: text });
+      this.debouncedCompile({ sourceFileMap });
       this.setState({
         sourceCode: text,
         diagnosticsIndex: undefined
       })
     } else {
       const options = {
-        readFileSync: (fname: string) => text
+        readFileSync: (fname: string) => {
+          if (fname in sourceFileMap) {
+            return sourceFileMap[fname];
+          }
+          throw new Error(`File not found ${fname}`);
+        }
       }
-      const res = assemble("foo.asm", options);
+      const res = assemble("main.asm", options);
       if (res.errors.length === 0) {
         this.setState({
           sourceCode: text,
+          prg: res.prg,
           disassembly: disassemble(res.prg),
           diagnostics: [],
           diagnosticsIndex: undefined
@@ -200,7 +214,7 @@ class App extends React.Component<{}, AppState> {
           />
         </div>
         <div id="siteDisasm">
-          <Disasm disassembly={this.state.disassembly} />
+          <Disasm disassembly={this.state.disassembly} prg={this.state.prg} />
         </div>
         <div id="mainDiag">
           <DiagnosticsList
