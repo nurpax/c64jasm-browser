@@ -173,7 +173,7 @@ entry: {
 
         <h3>Built-in support macros</h3>
 
-        <p>The c64jasm online site comes with a small macro library.  You can find their source code below.</p>
+        <p>The c64jasm online site includes a small built in macro library.  You can find its source code below.</p>
 
         <p>The builtin <code>c64.asm</code> contents:</p>
         <AsmBlock text={asmBuiltins.c64} />
