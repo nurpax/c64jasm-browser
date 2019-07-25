@@ -17,9 +17,12 @@ function assemble(args: AssembleArgs) {
   }
   const res = c64jasm.assemble("main.asm", options);
   if (res.errors.length === 0) {
+    const disasmOptions = {
+      isInstruction: res.debugInfo.info().isInstruction
+    };
     return {
       prg: res.prg,
-      disassembly: c64jasm.disassemble(res.prg),
+      disassembly: c64jasm.disassemble(res.prg, disasmOptions),
       diagnostics: res.errors
     }
   }

@@ -140,11 +140,14 @@ class App extends React.Component<{}, AppState> {
         }
       }
       const res = assemble("main.asm", options);
+      const disasmOptions = {
+        isInstruction: res.debugInfo.info().isInstruction
+      };
       if (res.errors.length === 0) {
         this.setState({
           sourceCode: text,
           prg: res.prg,
-          disassembly: disassemble(res.prg),
+          disassembly: disassemble(res.prg, disasmOptions),
           diagnostics: [],
           diagnosticsIndex: undefined
         });
