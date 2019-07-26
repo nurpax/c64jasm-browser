@@ -2,16 +2,19 @@ import React from 'react';
 
 import { assemble, disassemble } from 'c64jasm';
 
-import { Diag } from './types';
+import { Diag, SourceFile } from './types';
 import * as asmBuiltins from './asmBuiltins';
 import { findCharOffset }  from './editing';
 
 import Editor from './Editor';
 import Disasm from './Disasm';
 import DiagnosticsList from './DiagnosticsList';
+import SourceTabs from './SourceTabs';
 import Help from './Help';
 
 import styles from './App.module.css';
+
+const config = { useWebWorkers: true };
 
 export function debounce<F extends (...params: any[]) => void>(fn: F, delay: number) {
   let timeoutID: number|undefined = undefined;
@@ -21,14 +24,22 @@ export function debounce<F extends (...params: any[]) => void>(fn: F, delay: num
   } as F;
 }
 
-const config = { useWebWorkers: true };
 
 function Emoji(props: {emoji: string}) {
   return <span aria-label='emoji' role='img'>{props.emoji}</span>
 }
 
+interface SourceFiles {
+  selected: number;
+  files: SourceFile[];
+};
+
 interface AppState {
-  sourceCode: string;
+  gist: {
+    id: string;
+    loadCount: number;
+  };
+  sourceFiles: SourceFiles;
   disassembly: string[];
   prg: Buffer;
   diagnosticsIndex: number | undefined;
@@ -41,7 +52,17 @@ class App extends React.Component<{}, AppState> {
   assemblerWorker: Worker | undefined = undefined;
 
   state = {
-    sourceCode: '',
+    gist: {
+      id: '',
+      loadCount: 0
+    },
+    sourceFiles: {
+      selected: 0,
+      files: [
+        { name: 'main.asm', text: '', cursorOffset: 0 },
+        { name: 'c64.asm', text: asmBuiltins.c64, cursorOffset: 0 }
+      ]
+    },
     disassembly: [],
     prg: Buffer.from([]),
     diagnosticsIndex: 0,
@@ -57,6 +78,65 @@ class App extends React.Component<{}, AppState> {
       this.assemblerWorker.addEventListener('message', (msg: MessageEvent) => {
         this.handleWorkerMessage(msg);
       });
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const gistId = urlParams.get('gist_id');
+    if (gistId !== null) {
+      this.loadGist(gistId);
+    }
+  }
+
+  loadGist = (gistId: string) => {
+    fetch(`https://api.github.com/gists/${gistId}`)
+      .then(resp => resp.json())
+      .then(json => {
+        this.setState(prevState => {
+          const files: SourceFile[] = [];
+          let selected = 0;
+          for (const file of Object.values(json.files) as any) {
+            files.push({
+              name: file.filename,
+              text: file.content,
+              cursorOffset: 0
+            })
+            if (file.filename === 'main.asm') {
+              selected = files.length-1;
+            }
+          }
+          files.push({ name: 'c64.asm', text: asmBuiltins.c64, cursorOffset: 0 });
+          return {
+            gist: {
+              ...prevState.gist,
+              gistId,
+              loadCount: prevState.gist.loadCount+1
+            },
+            sourceFiles: {
+              files,
+              selected
+            }
+          }
+        }, () => this.recompile());
+      });
+  }
+
+  getCurrentSource = () => {
+    return this.state.sourceFiles.files[this.state.sourceFiles.selected];
+  }
+
+  updateCurrentSource = (sourceFiles: SourceFiles, text: string, cursorOffset: number) => {
+    return {
+      ...sourceFiles,
+      files: sourceFiles.files.map((e, idx) => {
+        if (idx === sourceFiles.selected) {
+          return {
+            ...e,
+            text,
+            cursorOffset
+          }
+        }
+        return e;
+      })
     }
   }
 
@@ -118,18 +198,15 @@ class App extends React.Component<{}, AppState> {
     }
   }, 250);
 
-  handleSetSource = (text: string) => {
-    const sourceFileMap: {[ndx: string]: string} = {
-      "main.asm": text,
-      "c64.asm": asmBuiltins.c64
-    };
-
+  recompile = () => {
+    const sourceFileMap: {[ndx: string]: string} = {};
+    for (let source of this.state.sourceFiles.files) {
+      sourceFileMap[source.name] = source.text;
+    }
+    // TODO shouldn't recompile if only cursorOffset changed
     if (config.useWebWorkers && this.assemblerWorker) {
       this.debouncedCompile({ sourceFileMap });
-      this.setState({
-        sourceCode: text,
-        diagnosticsIndex: undefined
-      })
+      this.setState({ diagnosticsIndex: undefined });
     } else {
       const options = {
         readFileSync: (fname: string) => {
@@ -145,7 +222,6 @@ class App extends React.Component<{}, AppState> {
           isInstruction: res.debugInfo.info().isInstruction
         };
         this.setState({
-          sourceCode: text,
           prg: res.prg,
           disassembly: disassemble(res.prg, disasmOptions),
           diagnostics: [],
@@ -153,12 +229,19 @@ class App extends React.Component<{}, AppState> {
         });
       } else {
         this.setState({
-          sourceCode: text,
           diagnostics: res.errors,
           diagnosticsIndex: undefined
-        })
+        });
       }
     }
+  }
+
+  handleSetSource = (text: string, cursorOffset: number) => {
+    this.setState(prevState => {
+      return {
+        sourceFiles: this.updateCurrentSource(prevState.sourceFiles, text, cursorOffset),
+      }
+    }, () => this.recompile());
   }
 
   // If typing in the editor, clear any diagnostics selection
@@ -187,12 +270,22 @@ class App extends React.Component<{}, AppState> {
     this.setState({ helpVisible: false });
   }
 
+  handleSourceTabSelected = (idx: number) => {
+    this.setState(prevState => {
+      return {
+        sourceFiles: {
+          ...prevState.sourceFiles,
+          selected: idx
+        }
+      }
+    });
+  }
   render () {
     const diags: Diag[] = this.state.diagnostics;
     let editorErrorLoc = undefined;
     if (diags.length !== 0 && this.state.diagnosticsIndex !== undefined) {
       const d = diags[this.state.diagnosticsIndex];
-      editorErrorLoc = findCharOffset(this.state.sourceCode, d.loc);
+      editorErrorLoc = findCharOffset(this.getCurrentSource().text, d.loc);
     }
     return (
       <div id='root'>
@@ -210,7 +303,10 @@ class App extends React.Component<{}, AppState> {
           onMouseUp={this.handleClearDiagnosticsSelectionOnMouse}
           id="mainCode"
         >
-          <Editor
+          <Editor // Note: key is reset for name and counter to force update editor on tab switches or gist loads
+            key={`${this.state.gist.id}/${this.state.gist.loadCount}/${this.getCurrentSource().name}`}
+            defaultValue={this.getCurrentSource().text}
+            defaultCursorOffset={this.getCurrentSource().cursorOffset}
             onSourceChanged={this.handleSetSource}
             diagnostics={this.state.diagnostics}
             errorCharOffset={editorErrorLoc}
@@ -218,6 +314,13 @@ class App extends React.Component<{}, AppState> {
         </div>
         <div id="siteDisasm">
           <Disasm disassembly={this.state.disassembly} prg={this.state.prg} />
+        </div>
+        <div id="mainSourceTabs">
+          <SourceTabs
+            setSelected={this.handleSourceTabSelected}
+            selected={this.state.sourceFiles.selected}
+            files={this.state.sourceFiles.files}
+          />
         </div>
         <div id="mainDiag">
           <DiagnosticsList

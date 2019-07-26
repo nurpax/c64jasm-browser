@@ -148,7 +148,9 @@ const Gutter = React.forwardRef((props: GutterProps, ref: React.Ref<HTMLDivEleme
 });
 
 interface EditorProps {
-  onSourceChanged: (text: string) => void;
+  defaultValue: string;
+  defaultCursorOffset: number;
+  onSourceChanged: (text: string, cursorOffset: number) => void;
   diagnostics: { loc: SourceLoc, msg: string }[];
   errorCharOffset: number | undefined;
 }
@@ -170,7 +172,7 @@ export default class extends React.Component<EditorProps, EditorState> {
     this.state = {
       scrollTop: 0,
       currentLine: undefined,
-      textLines: []
+      textLines: this.props.defaultValue.split('\n')
     }
 
     const cssVarLineHeight = getComputedStyle(document.documentElement).getPropertyValue('--code-window-line-height');
@@ -197,7 +199,11 @@ export default class extends React.Component<EditorProps, EditorState> {
   }
 
   handleSourceChanged = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    this.props.onSourceChanged(e.target.value);
+    let cursorOffset = 0;
+    if (this.textareaRef && this.textareaRef.current) {
+      cursorOffset = this.textareaRef.current.selectionStart;
+    }
+    this.props.onSourceChanged(e.target.value, cursorOffset);
     this.setState({
       textLines: e.target.value.split('\n')
     })
@@ -213,6 +219,7 @@ export default class extends React.Component<EditorProps, EditorState> {
       } else {
         this.setState({ currentLine: undefined });
       }
+      this.props.onSourceChanged(r.value, r.selectionStart);
     }
   }
 
@@ -232,6 +239,8 @@ export default class extends React.Component<EditorProps, EditorState> {
       indentTextarea.watch(this.textareaRef.current);
       this.textareaRef.current.spellcheck = false;
       this.textareaRef.current.focus();
+      this.textareaRef.current.selectionStart = this.props.defaultCursorOffset;
+      this.textareaRef.current.selectionEnd = this.props.defaultCursorOffset;
     }
   }
 
@@ -294,6 +303,7 @@ export default class extends React.Component<EditorProps, EditorState> {
               lineToErrors={lineToErrorsMap}
             />
             <textarea
+              defaultValue={this.props.defaultValue}
               wrap='off'
               onKeyUp={this.handleKeyUp}
               onKeyDown={this.handleKeyDown}

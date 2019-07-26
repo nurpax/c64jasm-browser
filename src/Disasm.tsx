@@ -27,7 +27,6 @@ export default class extends React.Component<DisasmProps> {
     FileSaver.saveAs(blob, "c64jasm-online.prg");
   }
 
-
   render () {
     return (
       <div className={styles.layoutContainer}>

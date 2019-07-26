@@ -1,4 +1,5 @@
 :root {
+  --body-color: rgb(173, 173, 173);
   --header-foreground-color: rgb(221, 221, 221);
 /*  --window-group-background: rgb(37, 37, 38);*/
   --window-group-background: rgb(51, 51, 51);
@@ -20,6 +21,12 @@
   --code-window-line-height: 16px;
   --code-window-height: calc(var(--code-window-line-height)*var(--code-window-num-lines));
 
+  --tab-background-color: #282828;
+  --tab-background-active-color: #111;
+  --tab-text-color: #ccc;
+  --tab-text-active-color: #fff;
+  --tab-drop-shadow: 1.0px 1.0px 3px 0px rgba(0, 0, 0, 0.3);
+
   --disasm-window-text-color: var(--code-window-text-color);
 
   --diagnostics-window-background: var(--code-window-background);
@@ -38,7 +45,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background: var(--body-background);
-  color: rgb(173, 173, 173);
+  color: var(--body-color);
   margin: 0px;
 }
 
@@ -68,10 +75,11 @@ pre {
   display: grid;
   grid-template-areas:
     "nav code disasm"
+    "nav source-tabs source-tabs"
     "nav diag diag";
   grid-template-rows: auto auto;/* 1fr 0.3fr;*/
   grid-template-columns: 240px 1fr 1fr;
-  grid-row-gap: 10px;
+  grid-row-gap: 5px;
   grid-column-gap: 10px;
   width: 90%;
   margin: 0;
@@ -91,6 +99,11 @@ header, div#mainCode, header#pageHeader, nav, div#siteDisasm, #mainDiag, div#mai
 
 #mainCode {
   grid-area: code;
+  background: var(--window-group-background);
+}
+
+#mainSourceTabs {
+  grid-area: source-tabs;
   background: var(--window-group-background);
 }
 
@@ -125,6 +138,7 @@ header, div#mainCode, header#pageHeader, nav, div#siteDisasm, #mainDiag, div#mai
       "header"
       "code"
       "disasm"
+      "source-tabs"
       "diag"
       "nav";
     grid-template-rows: 80px 1fr 70px 1fr 70px;
