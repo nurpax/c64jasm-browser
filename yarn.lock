@@ -2356,10 +2356,10 @@ bytes@3.1.0:
   resolved "https://registry.yarnpkg.com/bytes/-/bytes-3.1.0.tgz#f6cf7933a360e0588fa9fde85651cdc7f805d1f6"
   integrity sha512-zauLjrfCG+xvoyaqLoV8bLVXXNGC4JqlxFCutSDWA6fJrTo2ZuvLYTqZ7aHBLZSMOopbzwv8f+wZcVzfVTI2Dg==
 
-c64jasm@^0.6.0:
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/c64jasm/-/c64jasm-0.6.0.tgz#13be37f715c60be7e265595467b74d4e64a6b86d"
-  integrity sha512-ppQ3fq+jPdWsMB4sKCXnTO4RjozYWSfyfN1ulQcErPoLQF/dU1G2WwLUIrmUNCNpEMO+QGW0ZKXJmYV0DJWPlw==
+c64jasm@^0.6.1:
+  version "0.6.1"
+  resolved "https://registry.yarnpkg.com/c64jasm/-/c64jasm-0.6.1.tgz#1ea7357740884070bf1b07fc7b166341a73ccdd8"
+  integrity sha512-Aj3NB+mB9KugpdgURXW0Wz9OASIutNo901IRK1Q43icE1pclM6IE/wTSyqiU++U5ZSueRyVsgz74kkLx8LrdTw==
   dependencies:
     argparse "^1.0.10"
     chokidar "^2.0.4"
@@ -6547,7 +6547,7 @@ micromatch@^3.1.10, micromatch@^3.1.4, micromatch@^3.1.8:
     snapdragon "^0.8.1"
     to-regex "^3.0.2"
 
-"micromatch@github:jonschlinkert/micromatch#2.2.0":
+micromatch@jonschlinkert/micromatch#2.2.0:
   version "2.2.0"
   resolved "https://codeload.github.com/jonschlinkert/micromatch/tar.gz/5017fd78202e04c684cc31d3c2fb1f469ea222ff"
   dependencies:

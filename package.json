@@ -10,7 +10,7 @@
     "@types/node": "12.0.10",
     "@types/react": "16.8.22",
     "@types/react-dom": "16.8.4",
-    "c64jasm": "^0.6.0",
+    "c64jasm": "^0.6.1",
     "classnames": "^2.2.6",
     "file-saver": "^2.0.2",
     "indent-textarea": "^1.0.4",
