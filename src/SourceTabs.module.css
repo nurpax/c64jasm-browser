@@ -11,14 +11,16 @@
   display: flex;
   flex-direction: row;
   flex: 3;
+  align-items: center;
 }
 
 .gistContainer {
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
+  align-items: center;
   padding: 3px;
-  margin: 3px;
+  margin: 0px;
   flex: 1;
 }
 
@@ -33,7 +35,10 @@
   cursor: pointer;
   background: var(--tab-background-color);
   color: var(--tab-text-color);
-  padding: 3px;
+  padding-left: 3px;
+  padding-right: 3px;
+  padding-top: 1px;
+  padding-bottom: 3px;
   margin: 3px;
   box-shadow: var(--tab-drop-shadow);
 }
@@ -63,6 +68,7 @@
 
   padding-top: 1px;
   padding-bottom: 2px;
+  margin: 0;
 
   background: var(--tab-background-color);
   color: var(--tab-text-color);
@@ -87,6 +93,10 @@
 .gistContainer input {
   font-family: inherit; /* 1 */
   font-size: 100%; /* 1 */
+
+  padding-top: 1px;
+  padding-bottom: 2px;
+  margin: 0;
 
   background: var(--tab-background-color);
   color: var(--tab-text-color);
