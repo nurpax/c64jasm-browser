@@ -2,15 +2,38 @@
 .container {
   display: flex;
   flex-direction: row;
+  justify-content: space-between;
+  font-size: 0.9em;
+  user-select: none;
+}
+
+.tabContainer {
+  display: flex;
+  flex-direction: row;
+  flex: 3;
+}
+
+.gistContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  padding: 3px;
+  margin: 3px;
+  flex: 1;
+}
+
+.gistInputContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  box-shadow: var(--tab-drop-shadow);
 }
 
 .tab {
   cursor: pointer;
-  font-size: 0.9em;
-  padding: 3px;
-  user-select: none;
   background: var(--tab-background-color);
   color: var(--tab-text-color);
+  padding: 3px;
   margin: 3px;
   box-shadow: var(--tab-drop-shadow);
 }
@@ -18,4 +41,57 @@
 .tab.active {
   background: var(--tab-background-active-color);
   color: var(--tab-text-active-color);
+}
+
+
+/*----------------------------------------------------------------------*/
+/* button styles */
+.gistLoadButtonContainer {
+  box-shadow: var(--tab-drop-shadow);
+}
+
+.gistContainer .loadingText {
+  font-family: inherit; /* 1 */
+  font-size: 100%; /* 1 */
+  padding-top: 1px;
+  padding-bottom: 2px;
+}
+
+.gistContainer button {
+  font-family: inherit; /* 1 */
+  font-size: 100%; /* 1 */
+
+  padding-top: 1px;
+  padding-bottom: 2px;
+
+  background: var(--tab-background-color);
+  color: var(--tab-text-color);
+  border: 0;
+  box-shadow: none;
+  border-radius: 0px;
+  outline: none;
+}
+
+.gistContainer button:hover {
+  background: var(--tab-background-active-color);
+  color: var(--tab-text-active-color);
+}
+
+.gistContainer button:active {
+  background: var(--tab-background-color);
+  color: var(--tab-text-color);
+}
+
+/*----------------------------------------------------------------------*/
+/* input styles */
+.gistContainer input {
+  font-family: inherit; /* 1 */
+  font-size: 100%; /* 1 */
+
+  background: var(--tab-background-color);
+  color: var(--tab-text-color);
+  border: 0;
+  box-shadow: none;
+  border-radius: 0px;
+  outline: none;
 }

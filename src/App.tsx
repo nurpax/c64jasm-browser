@@ -16,6 +16,12 @@ import styles from './App.module.css';
 
 const config = { useWebWorkers: true };
 
+function setQueryStringParameter(name: string, value: string) {
+  const params = new URLSearchParams(window.location.search);
+  params.set(name, value);
+  window.history.replaceState({}, "", decodeURIComponent(`${window.location.pathname}?${params}`));
+}
+
 export function debounce<F extends (...params: any[]) => void>(fn: F, delay: number) {
   let timeoutID: number|undefined = undefined;
   return function(this: any, ...args: any[]) {
@@ -38,6 +44,7 @@ interface AppState {
   gist: {
     id: string;
     loadCount: number;
+    loading: boolean;
   };
   sourceFiles: SourceFiles;
   disassembly: string[];
@@ -54,7 +61,8 @@ class App extends React.Component<{}, AppState> {
   state = {
     gist: {
       id: '',
-      loadCount: 0
+      loadCount: 0,
+      loading: false
     },
     sourceFiles: {
       selected: 0,
@@ -87,10 +95,33 @@ class App extends React.Component<{}, AppState> {
     }
   }
 
+  setGistLoadingStatus = (loading: boolean) => {
+    this.setState(prevState => {
+      return {
+        gist: {
+          ...prevState.gist,
+          loading
+        }
+      }
+    });
+  }
+
   loadGist = (gistId: string) => {
+    this.setGistLoadingStatus(true);
     fetch(`https://api.github.com/gists/${gistId}`)
+      .then(resp => {
+        if (resp.status !== 200) {
+          throw new Error(`Gist load failed with HTTP status code ${resp.status}: ${resp.statusText}`);
+        }
+        return resp;
+      })
       .then(resp => resp.json())
       .then(json => {
+        this.setGistLoadingStatus(false);
+
+        // Stick gist_id into the current browser URL
+        setQueryStringParameter('gist_id', gistId);
+
         this.setState(prevState => {
           const files: SourceFile[] = [];
           let selected = 0;
@@ -117,6 +148,19 @@ class App extends React.Component<{}, AppState> {
             }
           }
         }, () => this.recompile());
+      })
+      .catch(err => {
+        console.log(err);
+        // TODO show error in GUI.  The below code just
+        // recovers enough to make the UI usable
+        this.setState(prevState => {
+          return {
+            gist: {
+              ...prevState.gist,
+              loading: false
+            }
+          }
+        });
       });
   }
 
@@ -320,6 +364,8 @@ class App extends React.Component<{}, AppState> {
             setSelected={this.handleSourceTabSelected}
             selected={this.state.sourceFiles.selected}
             files={this.state.sourceFiles.files}
+            onLoadGist={this.loadGist}
+            loadingGist={this.state.gist.loading}
           />
         </div>
         <div id="mainDiag">
