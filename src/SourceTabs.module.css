@@ -12,6 +12,7 @@
   flex-direction: row;
   flex: 3;
   align-items: center;
+  overflow-x: auto;
 }
 
 .gistContainer {
