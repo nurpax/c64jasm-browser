@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/c64jasm-browser/static/css/main.76a5e824.chunk.css",
-    "main.js": "/c64jasm-browser/static/js/main.378cf6e1.chunk.js",
-    "main.js.map": "/c64jasm-browser/static/js/main.378cf6e1.chunk.js.map",
+    "main.css": "/c64jasm-browser/static/css/main.b16aeacd.chunk.css",
+    "main.js": "/c64jasm-browser/static/js/main.7884b065.chunk.js",
+    "main.js.map": "/c64jasm-browser/static/js/main.7884b065.chunk.js.map",
     "runtime~main.js": "/c64jasm-browser/static/js/runtime~main.d6512d46.js",
     "runtime~main.js.map": "/c64jasm-browser/static/js/runtime~main.d6512d46.js.map",
-    "static/js/2.6adb430b.chunk.js": "/c64jasm-browser/static/js/2.6adb430b.chunk.js",
-    "static/js/2.6adb430b.chunk.js.map": "/c64jasm-browser/static/js/2.6adb430b.chunk.js.map",
+    "static/js/2.ba8c2897.chunk.js": "/c64jasm-browser/static/js/2.ba8c2897.chunk.js",
+    "static/js/2.ba8c2897.chunk.js.map": "/c64jasm-browser/static/js/2.ba8c2897.chunk.js.map",
     "index.html": "/c64jasm-browser/index.html",
-    "precache-manifest.3e630987ef2c1ac0493ae3a355248fbc.js": "/c64jasm-browser/precache-manifest.3e630987ef2c1ac0493ae3a355248fbc.js",
+    "precache-manifest.9f33e331319f8f7fb8de9b5ece076f40.js": "/c64jasm-browser/precache-manifest.9f33e331319f8f7fb8de9b5ece076f40.js",
     "service-worker.js": "/c64jasm-browser/service-worker.js",
-    "static/css/main.76a5e824.chunk.css.map": "/c64jasm-browser/static/css/main.76a5e824.chunk.css.map"
+    "static/css/main.b16aeacd.chunk.css.map": "/c64jasm-browser/static/css/main.b16aeacd.chunk.css.map"
   }
 }
