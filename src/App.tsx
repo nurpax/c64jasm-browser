@@ -55,7 +55,7 @@ interface AppState {
 };
 
 class SourceFileMapCache {
-  private cache: { [name: string]: string } = {};
+  private cache: { [name: string]: Buffer } = {};
 
   update(newFiles: SourceFile[]) {
     let changed = false;
@@ -88,9 +88,9 @@ class App extends React.Component<{}, AppState> {
     sourceFiles: {
       selected: 0,
       files: [
-        { name: 'main.asm', text: '', cursorOffset: 0 },
-        { name: 'c64.asm', text: asmBuiltins.c64, cursorOffset: 0 },
-        { name: 'plugin.js', text: asmBuiltins.plugin, cursorOffset: 0 }
+        { name: 'main.asm', text: Buffer.from(''), cursorOffset: 0 },
+        { name: 'c64.asm', text: Buffer.from(asmBuiltins.c64), cursorOffset: 0 },
+        { name: 'plugin.js', text: Buffer.from(asmBuiltins.plugin), cursorOffset: 0 }
       ]
     },
     disassembly: [],
@@ -130,7 +130,7 @@ class App extends React.Component<{}, AppState> {
 
   loadGist = (gistId: string) => {
     this.setGistLoadingStatus(true);
-    fetch(`https://api.github.com/gists/${gistId}`)
+    fetch(`https://api.github.com/gists/${gistId}`, { headers: { 'Accept': 'application/vnd.github.v3.base64'} })
       .then(resp => {
         if (resp.status !== 200) {
           throw new Error(`Gist load failed with HTTP status code ${resp.status}: ${resp.statusText}`);
@@ -150,14 +150,14 @@ class App extends React.Component<{}, AppState> {
           for (const file of Object.values(json.files) as any) {
             files.push({
               name: file.filename,
-              text: file.content,
+              text: Buffer.from(file.content, 'base64'),
               cursorOffset: 0
             })
             if (file.filename === 'main.asm') {
               selected = files.length-1;
             }
           }
-          files.push({ name: 'c64.asm', text: asmBuiltins.c64, cursorOffset: 0 });
+          files.push({ name: 'c64.asm', text: Buffer.from(asmBuiltins.c64), cursorOffset: 0 });
           return {
             gist: {
               ...prevState.gist,
@@ -190,7 +190,7 @@ class App extends React.Component<{}, AppState> {
     return this.state.sourceFiles.files[this.state.sourceFiles.selected];
   }
 
-  updateCurrentSource = (sourceFiles: SourceFiles, text: string, cursorOffset: number) => {
+  updateCurrentSource = (sourceFiles: SourceFiles, text: Buffer, cursorOffset: number) => {
     return {
       ...sourceFiles,
       files: sourceFiles.files.map((e, idx) => {
@@ -335,7 +335,7 @@ class App extends React.Component<{}, AppState> {
   handleSetSource = (text: string, cursorOffset: number) => {
     this.setState(prevState => {
       return {
-        sourceFiles: this.updateCurrentSource(prevState.sourceFiles, text, cursorOffset),
+        sourceFiles: this.updateCurrentSource(prevState.sourceFiles, Buffer.from(text), cursorOffset),
       }
     }, () => this.recompile());
   }
@@ -383,7 +383,7 @@ class App extends React.Component<{}, AppState> {
       const d = diags[this.state.diagnosticsIndex];
       const tabIdx = this.findSourceForDiagnostic(d);
       const src = this.state.sourceFiles.files[tabIdx];
-      editorErrorLoc = findCharOffset(src.text, d.loc);
+      editorErrorLoc = findCharOffset(src.text.toString(), d.loc);
     }
     // A list of diagnostics for the current file
     const currentTabDiagnostics = this.state.diagnostics.filter(diag => {
@@ -408,7 +408,7 @@ class App extends React.Component<{}, AppState> {
         >
           <Editor // Note: key is reset for name and counter to force update editor on tab switches or gist loads
             key={`${this.state.gist.id}/${this.state.gist.loadCount}/${this.getCurrentSource().name}`}
-            defaultValue={this.getCurrentSource().text}
+            defaultValue={this.getCurrentSource().text.toString()}
             defaultCursorOffset={this.getCurrentSource().cursorOffset}
             onSourceChanged={this.handleSetSource}
             diagnostics={currentTabDiagnostics}

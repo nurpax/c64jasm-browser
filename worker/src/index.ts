@@ -10,7 +10,7 @@ function assemble(args: AssembleArgs) {
   const options = {
     readFileSync: (fname: string) => {
       if (fname in sourceFileMap) {
-        return sourceFileMap[fname];
+        return Buffer.from(sourceFileMap[fname]);
       }
       throw new Error(`File not found ${fname}`);
     }

@@ -5,6 +5,6 @@ export type Diag = { loc: SourceLoc, msg: string, formatted: string };
 
 export interface SourceFile {
   name: string;
-  text: string;
+  text: Buffer;
   cursorOffset: number;
 };
