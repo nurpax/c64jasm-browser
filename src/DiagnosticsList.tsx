@@ -35,7 +35,7 @@ class Diagnostic extends React.Component<DiagnosticProps> {
         className={`${styles.diagItem}${selectedClass}`}
         onClick={() => this.props.onClickItem(this.props.index)}
       >
-        <span className={`${styles.error}${selectedClass}`}>main.asm:{loc.start.line}:{loc.start.column}: error:</span> {msg}
+        <span className={`${styles.error}${selectedClass}`}>{loc.source}:{loc.start.line}:{loc.start.column}: error:</span> {msg}
       </div>
     )
   }
