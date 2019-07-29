@@ -73,7 +73,15 @@ function AsmBlock(props: { text: string }) {
 }
 class HelpContents extends React.Component<{onClose: () => void}> {
   render () {
-    return (
+      const GistLink = (props: {id: string, text: string}) => {
+        return (
+          <div>
+            <a href={`${process.env.PUBLIC_URL}/?gist_id=${props.id}`}>{props.text}</a>
+            &nbsp;(<a href={`https://gist.github.com/nurpax/${props.id}`}>view on GitHub</a>)
+          </div>
+        )
+      }
+      return (
       <div className={cn(styles.helpContents, styles.maxWidth)}>
         <div className={styles.headingContainer}>
           <div className={styles.closeButtonContainer}>
@@ -88,6 +96,17 @@ class HelpContents extends React.Component<{onClose: () => void}> {
         <p>
           <a href='https://nurpax.github.io/c64jasm-browser/'>c64jasm online</a> is an interactive assembler demo site
           where you can write 6502 assembly with live error reporting and disassembly.
+        </p>
+
+        <p>Developed by Janne Hellsten, contact me through <a href='https://twitter.com/nurpax'>@nurpax</a></p>
+
+        <h3>Gists</h3>
+
+        <p>C64jasm online supports loading source files from GitHub gists.
+          Here's a list of example projects (click on the links to load):
+          <ul>
+            <li><GistLink id='4996160f290fa1b9470520d7be0ca25e' text='Sine sprites' /></li>
+          </ul>
         </p>
 
         <h3>Examples</h3>
