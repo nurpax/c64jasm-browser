@@ -68,7 +68,8 @@ class App extends React.Component<{}, AppState> {
       selected: 0,
       files: [
         { name: 'main.asm', text: '', cursorOffset: 0 },
-        { name: 'c64.asm', text: asmBuiltins.c64, cursorOffset: 0 }
+        { name: 'c64.asm', text: asmBuiltins.c64, cursorOffset: 0 },
+        { name: 'plugin.js', text: asmBuiltins.plugin, cursorOffset: 0 }
       ]
     },
     disassembly: [],
