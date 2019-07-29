@@ -98,7 +98,9 @@ class LoadGist extends React.Component<LoadGistProps, LoadGistState> {
             onCancel={() => this.setState({ editing: false })}
             onSubmit={(gistId) => {
               this.setState({ editing: false });
-              this.props.onLoadGist(gistId);
+              if (gistId !== '') {
+                this.props.onLoadGist(gistId);
+              }
             }}
           />
         }
