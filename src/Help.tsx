@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import ReactDOM from 'react-dom';
 import cn from 'classnames';
 
@@ -75,10 +75,10 @@ class HelpContents extends React.Component<{onClose: () => void}> {
   render () {
       const GistLink = (props: {id: string, text: string}) => {
         return (
-          <div>
+          <Fragment>
             <a href={`${process.env.PUBLIC_URL}/?gist_id=${props.id}`}>{props.text}</a>
             &nbsp;(<a href={`https://gist.github.com/nurpax/${props.id}`}>view on GitHub</a>)
-          </div>
+          </Fragment>
         )
       }
       return (
@@ -100,14 +100,14 @@ class HelpContents extends React.Component<{onClose: () => void}> {
 
         <p>Developed by Janne Hellsten, contact me through <a href='https://twitter.com/nurpax'>@nurpax</a></p>
 
-        <h3>Gists</h3>
+        <h3>Example projects</h3>
 
         <p>C64jasm online supports loading source files from GitHub gists.
           Here's a list of example projects (click on the links to load):
-          <ul>
-            <li><GistLink id='4996160f290fa1b9470520d7be0ca25e' text='Sine sprites' /></li>
-          </ul>
         </p>
+        <ul>
+          <li><GistLink id='4996160f290fa1b9470520d7be0ca25e' text='Sine sprites' /></li>
+        </ul>
 
         <h3>Examples</h3>
 

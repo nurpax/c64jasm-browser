@@ -171,7 +171,7 @@ export default class extends React.Component<EditorProps, EditorState> {
 
     this.state = {
       scrollTop: 0,
-      currentLine: undefined,
+      currentLine: 0,
       textLines: this.props.defaultValue.split('\n')
     }
 
@@ -238,9 +238,9 @@ export default class extends React.Component<EditorProps, EditorState> {
     if (this.textareaRef && this.textareaRef.current) {
       indentTextarea.watch(this.textareaRef.current);
       this.textareaRef.current.spellcheck = false;
-      this.textareaRef.current.focus();
       this.textareaRef.current.selectionStart = this.props.defaultCursorOffset;
       this.textareaRef.current.selectionEnd = this.props.defaultCursorOffset;
+      this.textareaRef.current.focus();
     }
   }
 
