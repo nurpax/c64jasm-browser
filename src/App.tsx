@@ -54,9 +54,30 @@ interface AppState {
   helpVisible: boolean;
 };
 
+class SourceFileMapCache {
+  private cache: { [name: string]: string } = {};
+
+  update(newFiles: SourceFile[]) {
+    let changed = false;
+    for (let source of newFiles) {
+      if (this.cache[source.name] !== source.text) {
+        this.cache[source.name] = source.text;
+        changed = true;
+      }
+      this.cache[source.name] = source.text;
+    }
+    return changed;
+  }
+
+  getSourceMap() {
+    return this.cache;
+  }
+}
+
 class App extends React.Component<{}, AppState> {
 
-  assemblerWorker: Worker | undefined = undefined;
+  private sourceFileMapCache = new SourceFileMapCache();
+  private assemblerWorker: Worker | undefined = undefined;
 
   state = {
     gist: {
@@ -75,7 +96,7 @@ class App extends React.Component<{}, AppState> {
     disassembly: [],
     prg: Buffer.from([]),
     diagnosticsIndex: 0,
-    diagnostics: [],
+    diagnostics: [] as Diag[],
     helpVisible: false
   }
 
@@ -203,19 +224,17 @@ class App extends React.Component<{}, AppState> {
     if (e.key === 'F4') {
       this.setState((prevState) => {
         if (prevState.diagnostics.length === 0) {
-          return { diagnosticsIndex: 0 };
+          return this.updateDiagnosticsIndexState(prevState, 0);
         }
         if (prevState.diagnosticsIndex === undefined) {
-          return { diagnosticsIndex: 0 };
+          return this.updateDiagnosticsIndexState(prevState, 0);
         }
         if (e.shiftKey) {
-          return {
-            diagnosticsIndex: Math.max(0, prevState.diagnosticsIndex - 1)
-          }
+          const newIdx = Math.max(0, prevState.diagnosticsIndex - 1);
+          return this.updateDiagnosticsIndexState(prevState, newIdx);
         } else {
-          return {
-            diagnosticsIndex: Math.min(prevState.diagnostics.length - 1, prevState.diagnosticsIndex + 1)
-          }
+          const newIdx = Math.min(prevState.diagnostics.length - 1, prevState.diagnosticsIndex + 1);
+          return this.updateDiagnosticsIndexState(prevState, newIdx);
         }
       })
       e.preventDefault();
@@ -231,10 +250,39 @@ class App extends React.Component<{}, AppState> {
     }
   }
 
+  findSourceForDiagnostic = (diag: Diag) => {
+    let newTabIdx = this.state.sourceFiles.selected;
+    const files = this.state.sourceFiles.files;
+    for (let i = 0; i < files.length; i++) {
+      const source = files[i];
+      if (source.name === diag.loc.source) {
+        newTabIdx = i;
+      }
+    }
+    return newTabIdx;
+  }
+
+  updateDiagnosticsIndexState = (prevState: AppState, idx: number) => {
+    const diag: Diag = this.state.diagnostics[idx];
+    const newTabIdx = this.findSourceForDiagnostic(diag);
+    if (prevState.sourceFiles.selected !== newTabIdx) {
+      return {
+        diagnosticsIndex: idx,
+        sourceFiles: {
+          ...prevState.sourceFiles,
+          selected: newTabIdx
+        }
+      }
+    } else {
+      return {
+        diagnosticsIndex: idx,
+        sourceFiles: prevState.sourceFiles
+      }
+    }
+  }
+
   handleOnClickDiagnostic = (idx: number) => {
-    this.setState({
-      diagnosticsIndex: idx
-    })
+    this.setState(prevState => this.updateDiagnosticsIndexState(prevState, idx));
   }
 
   debouncedCompile = debounce((asmArgs: any) => {
@@ -244,10 +292,13 @@ class App extends React.Component<{}, AppState> {
   }, 250);
 
   recompile = () => {
-    const sourceFileMap: {[ndx: string]: string} = {};
-    for (let source of this.state.sourceFiles.files) {
-      sourceFileMap[source.name] = source.text;
+    const changed = this.sourceFileMapCache.update(this.state.sourceFiles.files);
+    // Don't recompile if none of the source files changed since the previous
+    // compile.
+    if (!changed) {
+      return;
     }
+    const sourceFileMap = this.sourceFileMapCache.getSourceMap();
     // TODO shouldn't recompile if only cursorOffset changed
     if (config.useWebWorkers && this.assemblerWorker) {
       this.debouncedCompile({ sourceFileMap });
@@ -330,8 +381,15 @@ class App extends React.Component<{}, AppState> {
     let editorErrorLoc = undefined;
     if (diags.length !== 0 && this.state.diagnosticsIndex !== undefined) {
       const d = diags[this.state.diagnosticsIndex];
-      editorErrorLoc = findCharOffset(this.getCurrentSource().text, d.loc);
+      const tabIdx = this.findSourceForDiagnostic(d);
+      const src = this.state.sourceFiles.files[tabIdx];
+      editorErrorLoc = findCharOffset(src.text, d.loc);
     }
+    // A list of diagnostics for the current file
+    const currentTabDiagnostics = this.state.diagnostics.filter(diag => {
+      return diag.loc.source === this.getCurrentSource().name;
+    });
+
     return (
       <div id='root'>
         <nav id="mainNav">
@@ -353,7 +411,7 @@ class App extends React.Component<{}, AppState> {
             defaultValue={this.getCurrentSource().text}
             defaultCursorOffset={this.getCurrentSource().cursorOffset}
             onSourceChanged={this.handleSetSource}
-            diagnostics={this.state.diagnostics}
+            diagnostics={currentTabDiagnostics}
             errorCharOffset={editorErrorLoc}
           />
         </div>
