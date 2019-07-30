@@ -20,7 +20,7 @@ interface DisasmProps {
   prg: Buffer;
 }
 
-export default class extends React.Component<DisasmProps> {
+export default class extends React.PureComponent<DisasmProps> {
   handleDownloadPRG = (e: React.MouseEvent) => {
     e.preventDefault();
     const blob = new Blob([this.props.prg]);
@@ -35,7 +35,7 @@ export default class extends React.Component<DisasmProps> {
           <DownloadButton onClick={this.handleDownloadPRG} />
         </div>
         <div className={styles.disasmContainer}>
-            <pre>{this.props.disassembly.join('\n')}</pre>
+          <pre>{this.props.disassembly.join('\n')}</pre>
         </div>
       </div>
     )

@@ -47,7 +47,7 @@ interface DiagnosticsListProps {
   onClickItem: (idx: number) => void;
 }
 
-export default class DiagnosticsList extends React.Component<DiagnosticsListProps> {
+export default class DiagnosticsList extends React.PureComponent<DiagnosticsListProps> {
   handleOnClickItem = (idx: number) => {
     this.props.onClickItem(idx);
   }

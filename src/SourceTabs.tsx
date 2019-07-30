@@ -3,6 +3,8 @@ import React from 'react';
 import styles from './SourceTabs.module.css';
 import cn from 'classnames';
 
+import memoizeOne from 'memoize-one';
+
 import { SourceFile } from './types';
 
 interface LoadGistInputProps {
@@ -71,7 +73,7 @@ interface LoadGistState {
   editing: boolean;
 }
 
-class LoadGist extends React.Component<LoadGistProps, LoadGistState> {
+class LoadGist extends React.PureComponent<LoadGistProps, LoadGistState> {
   state = {
     editing: false
   }
@@ -119,6 +121,54 @@ class LoadGist extends React.Component<LoadGistProps, LoadGistState> {
   }
 }
 
+interface TabsProps {
+  filenames: string[];
+  selected: number;
+  setSelected: (idx: number) => void;
+}
+
+class Tabs extends React.PureComponent<TabsProps> {
+  handleTabClick = (e: React.MouseEvent, idx: number) => {
+    this.props.setSelected(idx);
+  }
+
+  render () {
+    const tabs = this.props.filenames.map((name, idx: number) => {
+      return (
+        <div
+          key={name}
+          className={cn(styles.tab, idx === this.props.selected ? styles.active : '')}
+          onClick={e => this.handleTabClick(e, idx)}
+        >
+          {name}
+        </div>
+      );
+    });
+    return (
+      <div className={styles.tabContainer}>
+        {tabs}
+      </div>
+    );
+  }
+}
+
+function stringArrayEqual(newArgs: string[][], oldArgs: string[][]) {
+  if (newArgs === oldArgs) {
+    return true;
+  }
+  if (newArgs.length !== oldArgs.length) {
+    return false;
+  }
+  const a = newArgs[0];
+  const b = oldArgs[0];
+  for (let i = 0; i < a.length; i++) {
+    if (a[i] !== b[i]) {
+        return false;
+    }
+  }
+  return true;
+}
+
 interface SourceTabsProps {
   setSelected: (idx: number) => void;
   selected: number;
@@ -129,26 +179,20 @@ interface SourceTabsProps {
 }
 
 export default class extends React.Component<SourceTabsProps> {
-  handleTabClick = (e: React.MouseEvent, idx: number) => {
-    this.props.setSelected(idx);
-  }
+
+  // Return the same filename ptr if the source file names didn't change.
+  // Just to avoid some rerenders.
+  getFilenames = memoizeOne((files: string[]) => files, stringArrayEqual);
+
   render () {
-    const tabs = this.props.files.map(({name}, idx: number) => {
-      return (
-        <div
-          key={name}
-          className={cn(styles.tab, idx === this.props.selected ? styles.active : '')}
-          onClick={e => this.handleTabClick(e, idx)}
-        >
-          {name}
-        </div>
-      );
-    })
+    const filenames = this.getFilenames(this.props.files.map(({name}) => name));
     return (
       <div className={styles.container}>
-        <div className={styles.tabContainer}>
-          {tabs}
-        </div>
+        <Tabs
+          filenames={filenames}
+          selected={this.props.selected}
+          setSelected={this.props.setSelected}
+        />
         <LoadGist
           onLoadGist={this.props.onLoadGist}
           loadingGist={this.props.loadingGist}
