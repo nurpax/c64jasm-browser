@@ -123,6 +123,7 @@ class LoadGist extends React.PureComponent<LoadGistProps, LoadGistState> {
 
 interface TabsProps {
   filenames: string[];
+  sortIdx: number[];
   selected: number;
   setSelected: (idx: number) => void;
 }
@@ -133,7 +134,8 @@ class Tabs extends React.PureComponent<TabsProps> {
   }
 
   render () {
-    const tabs = this.props.filenames.map((name, idx: number) => {
+    const tabs = this.props.sortIdx.map((idx: number) => {
+      const name = this.props.filenames[idx];
       return (
         <div
           key={name}
@@ -169,6 +171,26 @@ function stringArrayEqual(newArgs: string[][], oldArgs: string[][]) {
   return true;
 }
 
+function getFileExt(fname: string) {
+  return fname.slice((fname.lastIndexOf(".") - 1 >>> 0) + 2);
+}
+
+function computeSortOrder(files: string[]): number[] {
+  const arr: [string, number][] = [];
+  for (let i = 0; i < files.length; i++) {
+    arr.push([files[i], i]);
+  }
+  arr.sort(([fnA, idxA], [fnB, idxB]) => {
+    const extA = getFileExt(fnA);
+    const extB = getFileExt(fnB);
+    if (extA == extB) {
+      return fnA.localeCompare(fnB);
+    }
+    return extA.localeCompare(extB);
+  });
+  return arr.map(([_, i]) => i);
+}
+
 interface SourceTabsProps {
   setSelected: (idx: number) => void;
   selected: number;
@@ -183,13 +205,16 @@ export default class extends React.Component<SourceTabsProps> {
   // Return the same filename ptr if the source file names didn't change.
   // Just to avoid some rerenders.
   getFilenames = memoizeOne((files: string[]) => files, stringArrayEqual);
+  getSortOrder = memoizeOne((files: string[]) => computeSortOrder(files));
 
   render () {
     const filenames = this.getFilenames(this.props.files.map(({name}) => name));
+    const sortIdx = this.getSortOrder(filenames);
     return (
       <div className={styles.container}>
         <Tabs
           filenames={filenames}
+          sortIdx={sortIdx}
           selected={this.props.selected}
           setSelected={this.props.setSelected}
         />
