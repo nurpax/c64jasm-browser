@@ -66,11 +66,7 @@ class SourceFileMapCache {
       }
       this.cache[source.name] = source.text;
     }
-    return changed;
-  }
-
-  getSourceMap() {
-    return this.cache;
+    return { sourceFileMap: this.cache, changed };
   }
 }
 
@@ -288,13 +284,12 @@ class App extends React.Component<{}, AppState> {
   }, 250);
 
   recompile = () => {
-    const changed = this.sourceFileMapCache.update(this.state.sourceFiles.files);
+    const { sourceFileMap, changed } = this.sourceFileMapCache.update(this.state.sourceFiles.files);
     // Don't recompile if none of the source files changed since the previous
     // compile.
     if (!changed) {
       return;
     }
-    const sourceFileMap = this.sourceFileMapCache.getSourceMap();
     // TODO shouldn't recompile if only cursorOffset changed
     if (config.useWebWorkers && this.assemblerWorker) {
       this.debouncedCompile({ sourceFileMap });
