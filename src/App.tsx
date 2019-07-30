@@ -190,18 +190,11 @@ class App extends React.Component<{}, AppState> {
     return this.state.sourceFiles.files[this.state.sourceFiles.selected];
   }
 
-  updateCurrentSource = (sourceFiles: SourceFiles, text: Buffer, cursorOffset: number) => {
+  updateCurrentSourceFile = (sourceFiles: SourceFiles, update: (source: SourceFile) => SourceFile): SourceFiles => {
     return {
       ...sourceFiles,
       files: sourceFiles.files.map((e, idx) => {
-        if (idx === sourceFiles.selected) {
-          return {
-            ...e,
-            text,
-            cursorOffset
-          }
-        }
-        return e;
+        return idx === sourceFiles.selected ? update(e) : e;
       })
     }
   }
@@ -252,6 +245,9 @@ class App extends React.Component<{}, AppState> {
 
   findSourceForDiagnostic = (diag: Diag) => {
     let newTabIdx = this.state.sourceFiles.selected;
+    if (diag === undefined) {
+      return newTabIdx;
+    }
     const files = this.state.sourceFiles.files;
     for (let i = 0; i < files.length; i++) {
       const source = files[i];
@@ -332,12 +328,20 @@ class App extends React.Component<{}, AppState> {
     }
   }
 
-  handleSetSource = (text: string, cursorOffset: number) => {
+  handleSetSource = (text: string) => {
     this.setState(prevState => {
       return {
-        sourceFiles: this.updateCurrentSource(prevState.sourceFiles, Buffer.from(text), cursorOffset),
+        sourceFiles: this.updateCurrentSourceFile(prevState.sourceFiles, sf => ({ ...sf, text: Buffer.from(text) }))
       }
     }, () => this.recompile());
+  }
+
+  handleSetSourcePosition = (cursorOffset: number) => {
+    this.setState(prevState => {
+      return {
+        sourceFiles: this.updateCurrentSourceFile(prevState.sourceFiles, sf => ({ ...sf, cursorOffset }))
+      }
+    });
   }
 
   // If typing in the editor, clear any diagnostics selection
@@ -381,9 +385,11 @@ class App extends React.Component<{}, AppState> {
     let editorErrorLoc = undefined;
     if (diags.length !== 0 && this.state.diagnosticsIndex !== undefined) {
       const d = diags[this.state.diagnosticsIndex];
-      const tabIdx = this.findSourceForDiagnostic(d);
-      const src = this.state.sourceFiles.files[tabIdx];
-      editorErrorLoc = findCharOffset(src.text.toString(), d.loc);
+      if (d !== undefined) {
+        const tabIdx = this.findSourceForDiagnostic(d);
+        const src = this.state.sourceFiles.files[tabIdx];
+        editorErrorLoc = findCharOffset(src.text.toString(), d.loc);
+      }
     }
     // A list of diagnostics for the current file
     const currentTabDiagnostics = this.state.diagnostics.filter(diag => {
@@ -411,6 +417,7 @@ class App extends React.Component<{}, AppState> {
             defaultValue={this.getCurrentSource().text.toString()}
             defaultCursorOffset={this.getCurrentSource().cursorOffset}
             onSourceChanged={this.handleSetSource}
+            onSourcePositionChanged={this.handleSetSourcePosition}
             diagnostics={currentTabDiagnostics}
             errorCharOffset={editorErrorLoc}
           />

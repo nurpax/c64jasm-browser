@@ -150,7 +150,8 @@ const Gutter = React.forwardRef((props: GutterProps, ref: React.Ref<HTMLDivEleme
 interface EditorProps {
   defaultValue: string;
   defaultCursorOffset: number;
-  onSourceChanged: (text: string, cursorOffset: number) => void;
+  onSourceChanged: (text: string) => void;
+  onSourcePositionChanged: (cursorOffset: number) => void;
   diagnostics: { loc: SourceLoc, msg: string }[];
   errorCharOffset: number | undefined;
 }
@@ -203,7 +204,7 @@ export default class extends React.Component<EditorProps, EditorState> {
     if (this.textareaRef && this.textareaRef.current) {
       cursorOffset = this.textareaRef.current.selectionStart;
     }
-    this.props.onSourceChanged(e.target.value, cursorOffset);
+    this.props.onSourceChanged(e.target.value);
     this.setState({
       textLines: e.target.value.split('\n')
     })
@@ -219,7 +220,7 @@ export default class extends React.Component<EditorProps, EditorState> {
       } else {
         this.setState({ currentLine: undefined });
       }
-      this.props.onSourceChanged(r.value, r.selectionStart);
+      this.props.onSourcePositionChanged(r.selectionStart);
     }
   }
 
@@ -310,7 +311,9 @@ export default class extends React.Component<EditorProps, EditorState> {
               onSelect={this.handleSelect}
               onScroll={this.handleScroll}
               ref={this.textareaRef}
-              onChange={this.handleSourceChanged} className={styles.textarea}></textarea>
+              onChange={this.handleSourceChanged}
+              className={styles.textarea}
+            />
           </div>
         </div>
       </div>
