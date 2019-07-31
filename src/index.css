@@ -19,7 +19,7 @@
   --code-window-font-size: 13px;
   --code-window-font-weight: 300;
   --code-window-line-height: 16px;
-  --code-window-height: calc(var(--code-window-line-height)*var(--code-window-num-lines));
+  --code-window-height: 100%;
 
   --tab-background-color: #282828;
   --tab-background-active-color: #111;
@@ -77,11 +77,12 @@ pre {
     "nav code disasm"
     "nav source-tabs source-tabs"
     "nav diag diag";
-  grid-template-rows: auto auto;/* 1fr 0.3fr;*/
+  grid-template-rows: calc(0.9*75vh) calc(0.9*5vh) calc(0.9*20vh);
   grid-template-columns: 240px 1fr 1fr;
   grid-row-gap: 5px;
   grid-column-gap: 10px;
   width: 90%;
+  height: 90%;
   margin: 0;
 }
 

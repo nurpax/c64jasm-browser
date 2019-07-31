@@ -183,7 +183,7 @@ function computeSortOrder(files: string[]): number[] {
   arr.sort(([fnA, idxA], [fnB, idxB]) => {
     const extA = getFileExt(fnA);
     const extB = getFileExt(fnB);
-    if (extA == extB) {
+    if (extA === extB) {
       return fnA.localeCompare(fnB);
     }
     return extA.localeCompare(extB);

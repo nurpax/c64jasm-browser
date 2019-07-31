@@ -200,10 +200,6 @@ export default class extends React.Component<EditorProps, EditorState> {
   }
 
   handleSourceChanged = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    let cursorOffset = 0;
-    if (this.textareaRef && this.textareaRef.current) {
-      cursorOffset = this.textareaRef.current.selectionStart;
-    }
     this.props.onSourceChanged(e.target.value);
     this.setState({
       textLines: e.target.value.split('\n')
