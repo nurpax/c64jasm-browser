@@ -1,6 +1,7 @@
 :root {
   --body-color: rgb(173, 173, 173);
   --header-foreground-color: rgb(221, 221, 221);
+  --header-foreground-darker-color: rgb(170, 170, 170);
 /*  --window-group-background: rgb(37, 37, 38);*/
   --window-group-background: rgb(51, 51, 51);
   --body-background: var(--window-group-background);
@@ -19,7 +20,7 @@
   --code-window-font-size: 13px;
   --code-window-font-weight: 300;
   --code-window-line-height: 16px;
-  --code-window-height: calc(var(--code-window-line-height)*var(--code-window-num-lines));
+  --code-window-height: 100%;
 
   --tab-background-color: #282828;
   --tab-background-active-color: #111;
@@ -74,26 +75,27 @@ pre {
 #root {
   display: grid;
   grid-template-areas:
-    "nav code disasm"
-    "nav source-tabs source-tabs"
-    "nav diag diag";
-  grid-template-rows: auto auto;/* 1fr 0.3fr;*/
+    "     .      header header"
+    "source-tabs code disasm"
+    "source-tabs diag diag";
+  grid-template-rows: calc(0.9*10vh) calc(0.9*70vh) calc(0.9*20vh);
   grid-template-columns: 240px 1fr 1fr;
   grid-row-gap: 5px;
   grid-column-gap: 10px;
   width: 90%;
+  height: 90%;
   margin: 0;
 }
 
-header, div#mainCode, header#pageHeader, nav, div#siteDisasm, #mainDiag, div#mainPad {
+div#mainHeader, div#mainCode, header#pageHeader, div#siteDisasm, #mainDiag, div#mainSourceTabs {
   padding: 0.2em;
 }
 
-#pageHeader {
+#mainHeader {
   grid-area: header;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: flex-start;
+  align-items: flex-start;
   flex-direction: row;
 }
 
@@ -105,20 +107,6 @@ header, div#mainCode, header#pageHeader, nav, div#siteDisasm, #mainDiag, div#mai
 #mainSourceTabs {
   grid-area: source-tabs;
   background: var(--window-group-background);
-}
-
-#mainNav {
-  grid-area: nav;
-  text-align: left;
-  margin-right: 1em;
-
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
-
-#mainPad {
-  grid-area: pad;
 }
 
 #siteDisasm {

@@ -25,12 +25,14 @@
     height: var(--diagnostics-height);
     width: 100%;
     background: var(--diagnostics-window-background);
+    overflow-x: auto;
     overflow-y: auto;
 }
 
 .diagItem {
     cursor: pointer;
     width: 100%;
+    white-space: nowrap;
     height: var(--diagnostics-item-height);
 }
 

@@ -22,6 +22,10 @@ function setQueryStringParameter(name: string, value: string) {
   window.history.replaceState({}, "", decodeURIComponent(`${window.location.pathname}?${params}`));
 }
 
+function clearQueryStringParameters() {
+  window.history.replaceState({}, "", decodeURIComponent(`${window.location.pathname}`));
+}
+
 export function debounce<F extends (...params: any[]) => void>(fn: F, delay: number) {
   let timeoutID: number|undefined = undefined;
   return function(this: any, ...args: any[]) {
@@ -70,6 +74,12 @@ class SourceFileMapCache {
   }
 }
 
+const prebuiltFiles = [
+  { name: 'main.asm', text: Buffer.from(''), cursorOffset: 0 },
+  { name: 'c64.asm', text: Buffer.from(asmBuiltins.c64), cursorOffset: 0 },
+  { name: 'plugin.js', text: Buffer.from(asmBuiltins.plugin), cursorOffset: 0 }
+];
+
 class App extends React.Component<{}, AppState> {
 
   private sourceFileMapCache = new SourceFileMapCache();
@@ -83,11 +93,7 @@ class App extends React.Component<{}, AppState> {
     },
     sourceFiles: {
       selected: 0,
-      files: [
-        { name: 'main.asm', text: Buffer.from(''), cursorOffset: 0 },
-        { name: 'c64.asm', text: Buffer.from(asmBuiltins.c64), cursorOffset: 0 },
-        { name: 'plugin.js', text: Buffer.from(asmBuiltins.plugin), cursorOffset: 0 }
-      ]
+      files: prebuiltFiles
     },
     disassembly: [],
     prg: Buffer.from([]),
@@ -124,7 +130,25 @@ class App extends React.Component<{}, AppState> {
     });
   }
 
-  loadGist = (gistId: string) => {
+  loadGist = (gistId: string | null) => {
+    if (gistId === null) {
+      // Stick gist_id into the current browser URL
+      clearQueryStringParameters();
+      this.setState(prevState => {
+        return {
+          gist: {
+            ...prevState.gist,
+            gistId,
+            loadCount: prevState.gist.loadCount+1
+          },
+          sourceFiles: {
+            files: prebuiltFiles,
+            selected: 0
+          }
+        }
+      });
+      return;
+    }
     this.setGistLoadingStatus(true);
     fetch(`https://api.github.com/gists/${gistId}`, { headers: { 'Accept': 'application/vnd.github.v3.base64'} })
       .then(resp => {
@@ -393,14 +417,22 @@ class App extends React.Component<{}, AppState> {
 
     return (
       <div id='root'>
-        <nav id="mainNav">
-          <div className={styles.navContainer}>
-            <div className={styles.appTitle}><a href='https://nurpax.github.io/c64jasm/'>c64jasm</a> online</div>
-            <p>A little experimental 6502 assembler for the C64</p>
-            <p><Emoji emoji='👉' /> <a onClick={this.handleClickHelp} href='/' target='_blank'>help</a></p>
-            <p><Emoji emoji='👉' /> <a href='https://github.com/nurpax/c64jasm-browser'>source code</a></p>
+        <div id="mainHeader">
+          <div className={styles.headerContainer}>
+            <div>
+              <div className={styles.appTitle}><a href='https://nurpax.github.io/c64jasm/'>c64jasm</a> online</div>
+              <p>A little experimental 6502 assembler for the C64</p>
+            </div>
+            <div className={styles.appHelpLinksContainer}>
+              <div className={styles.helpLink}>
+                <Emoji emoji='👉' />&nbsp;
+                <a onClick={this.handleClickHelp} href='/' target='_blank'>Help
+                </a>
+              </div>
+              <div className={styles.githubLink}>(<a href='https://github.com/nurpax/c64jasm-browser'>source code</a>)</div>
+            </div>
           </div>
-        </nav>
+        </div>
         <div
           onKeyDown={this.handleClearDiagnosticsSelectionOnKey}
           onMouseDown={this.handleClearDiagnosticsSelectionOnMouse}
@@ -422,6 +454,7 @@ class App extends React.Component<{}, AppState> {
         </div>
         <div id="mainSourceTabs">
           <SourceTabs
+            key={this.state.gist.loadCount}
             setSelected={this.handleSourceTabSelected}
             selected={this.state.sourceFiles.selected}
             files={this.state.sourceFiles.files}

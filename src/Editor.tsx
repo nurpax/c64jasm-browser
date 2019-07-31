@@ -2,6 +2,7 @@
 import React, { Fragment } from 'react';
 import indentTextarea from 'indent-textarea';
 import cn from 'classnames';
+import ResizeObserver from 'resize-observer-polyfill';
 
 import { findLine } from './editing';
 import { SourceLoc } from 'c64jasm';
@@ -160,12 +161,13 @@ interface EditorState {
   scrollTop: number;
   currentLine: number | undefined;
   textLines: string[];
+  textareaDims: { width: number, height: number };
 }
 
 export default class extends React.Component<EditorProps, EditorState> {
 
   private editorLineHeight = 0;
-  private numEditorCharRows = 0;
+  private resizeObserver: ResizeObserver;
 
   constructor (props: EditorProps) {
     super(props);
@@ -173,7 +175,8 @@ export default class extends React.Component<EditorProps, EditorState> {
     this.state = {
       scrollTop: 0,
       currentLine: 0,
-      textLines: this.props.defaultValue.split('\n')
+      textLines: this.props.defaultValue.split('\n'),
+      textareaDims: { width: 0, height: 0 }
     }
 
     const cssVarLineHeight = getComputedStyle(document.documentElement).getPropertyValue('--code-window-line-height');
@@ -182,12 +185,16 @@ export default class extends React.Component<EditorProps, EditorState> {
       throw new Error('failed querying css var --code-window-line-height' + cssVarLineHeight);
     }
     this.editorLineHeight = parseInt((match as any).groups.height);
-    const cssNumLines = getComputedStyle(document.documentElement).getPropertyValue('--code-window-num-lines');
-    match = /^[ ]*(?<lines>[0-9]+)$/.exec(cssNumLines);
-    if (!match) {
-      throw new Error('failed querying css var --code-window-num-lines');
-    }
-    this.numEditorCharRows = parseInt((match as any).groups.lines);
+
+    this.resizeObserver = new ResizeObserver(entries => {
+      const e = entries[0]
+      this.setState({
+        textareaDims: {
+          width: e.contentRect.width,
+          height: e.contentRect.height
+        }
+      });
+    });
   }
 
   textareaRef = React.createRef<HTMLTextAreaElement>();
@@ -196,22 +203,18 @@ export default class extends React.Component<EditorProps, EditorState> {
 
   handleScroll = (e: React.UIEvent<HTMLTextAreaElement>) => {
     const { scrollTop } = e.nativeEvent.target as any;
-    this.setState({ scrollTop })
+    this.setState({ scrollTop });
   }
 
   handleSourceChanged = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    let cursorOffset = 0;
-    if (this.textareaRef && this.textareaRef.current) {
-      cursorOffset = this.textareaRef.current.selectionStart;
-    }
     this.props.onSourceChanged(e.target.value);
     this.setState({
       textLines: e.target.value.split('\n')
-    })
+    });
   }
 
   updateCursorState = () => {
-    if (this.textareaRef && this.textareaRef.current) {
+    if (this.textareaRef.current) {
       const r = this.textareaRef.current;
       if (r.selectionStart === r.selectionEnd) {
         const loc = r.selectionStart;
@@ -236,17 +239,26 @@ export default class extends React.Component<EditorProps, EditorState> {
   }
 
   componentDidMount () {
-    if (this.textareaRef && this.textareaRef.current) {
+    if (this.textareaRef.current) {
       indentTextarea.watch(this.textareaRef.current);
       this.textareaRef.current.spellcheck = false;
       this.textareaRef.current.selectionStart = this.props.defaultCursorOffset;
       this.textareaRef.current.selectionEnd = this.props.defaultCursorOffset;
       this.textareaRef.current.focus();
+
+      this.resizeObserver.observe(this.textareaRef.current);
     }
   }
 
+  componentWillUnmount () {
+    if (this.textareaRef.current) {
+      this.resizeObserver.unobserve(this.textareaRef.current);
+    }
+  }
+
+
   componentDidUpdate (prevProps: EditorProps, prevState: EditorState) {
-    if (this.textareaRef && this.textareaRef.current) {
+    if (this.textareaRef.current) {
       if (this.props.errorCharOffset !== undefined) {
         this.textareaRef.current.focus();
         this.textareaRef.current.setSelectionRange(this.props.errorCharOffset, this.props.errorCharOffset);
@@ -256,17 +268,17 @@ export default class extends React.Component<EditorProps, EditorState> {
     if (prevState.scrollTop !== this.state.scrollTop) {
       const scrollTop = this.state.scrollTop;
       const vscroll = scrollTop % this.editorLineHeight;
-      if (this.gutterRef && this.gutterRef.current) {
+      if (this.gutterRef.current) {
         this.gutterRef.current.scrollTop = vscroll;
       }
-      if (this.highlighterRef && this.highlighterRef.current) {
+      if (this.highlighterRef.current) {
         this.highlighterRef.current.scrollTop = vscroll;
       }
     }
   }
 
   handleMouseDown = (e: React.MouseEvent) => {
-    if (this.textareaRef && this.textareaRef.current) {
+    if (this.textareaRef.current) {
       const yoffs = e.nativeEvent.offsetY + this.state.scrollTop;
       this.setState({
         currentLine: Math.min(this.state.textLines.length - 1, Math.floor(yoffs / this.editorLineHeight))
@@ -281,8 +293,10 @@ export default class extends React.Component<EditorProps, EditorState> {
       const lst = lineToErrorsMap.has(line) ? lineToErrorsMap.get(line)! : [];
       lst.push(loc);
       lineToErrorsMap.set(line, lst);
-    })
+    });
     const startCharRow = Math.floor(this.state.scrollTop / this.editorLineHeight);
+    const numEditorCharRows =
+      this.state.textareaDims.height !== 0 ? Math.ceil(this.state.textareaDims.height / this.editorLineHeight) : 1;
     return (
       <div className={styles.layoutContainer}>
         <div className={styles.heading}>Assembly</div>
@@ -290,7 +304,7 @@ export default class extends React.Component<EditorProps, EditorState> {
           <Gutter
             ref={this.gutterRef}
             startRow={startCharRow}
-            numRows={this.numEditorCharRows}
+            numRows={numEditorCharRows}
             numTextRows={this.state.textLines.length}
             currentLine={this.state.currentLine}
           />
@@ -298,7 +312,7 @@ export default class extends React.Component<EditorProps, EditorState> {
             <Highlighter
               ref={this.highlighterRef}
               startRow={startCharRow}
-              numRows={this.numEditorCharRows}
+              numRows={numEditorCharRows}
               currentLine={this.state.currentLine}
               textLines={this.state.textLines}
               lineToErrors={lineToErrorsMap}

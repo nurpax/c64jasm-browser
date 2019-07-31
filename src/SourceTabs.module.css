@@ -1,39 +1,49 @@
 
 .container {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: space-between;
-  font-size: 0.9em;
   user-select: none;
   align-items: flex-start;
+
+  margin-right: 16px;
+}
+
+.heading {
+  margin-bottom: var(--heading-bottom-margin);
+  padding-left: 3px;
 }
 
 .tabContainer {
   display: flex;
-  flex-direction: row;
-  flex: 4;
-  overflow-x: auto;
+  flex-direction: column;
+  width: 100%;
+  overflow-x: hidden;
+  justify-content: flex-start;
 }
 
 .gistContainer {
+  width: 100%;
   display: flex;
   flex-direction: row;
-  justify-content: flex-end;
+  justify-content: flex-start;
   align-items: center;
-  padding: 3px;
-  margin: 0px;
-  margin-left: 10px;
-  flex: 1;
+
+  margin-top: 15px;
+
+  margin-bottom: 4px;
+  margin-left: 0px;
+  margin-right: 0px;
 }
 
 .gistInputContainer {
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
-  box-shadow: var(--tab-drop-shadow);
 }
 
 .tab {
+  width: 100%;
   cursor: pointer;
   white-space: nowrap;
   background: var(--tab-background-color);
@@ -42,8 +52,11 @@
   padding-right: 3px;
   padding-top: 1px;
   padding-bottom: 3px;
-  margin: 3px;
-  box-shadow: var(--tab-drop-shadow);
+
+  margin-bottom: 2px;
+  margin-left: 0px;
+  margin-right: 0px;
+  margin-top: 0px;
 }
 
 .tab.active {
@@ -54,41 +67,52 @@
 
 /*----------------------------------------------------------------------*/
 /* button styles */
+.gist {
+  width: 100%;
+  margin-bottom: 3px;
+}
+
+.gist button {
+  font-family: inherit; /* 1 */
+  font-size: 100%; /* 1 */
+
+  background: var(--tab-background-color);
+  color: var(--tab-text-color);
+  border: 0;
+  border-radius: 0px;
+  outline: none;
+}
+
+.gist button:hover {
+  background: var(--tab-background-active-color);
+  color: var(--tab-text-active-color);
+}
+
+.gist button:active {
+  background: var(--tab-background-color);
+  color: var(--tab-text-color);
+}
+
 .gistLoadButtonContainer {
-  box-shadow: var(--tab-drop-shadow);
+  width: 100%;
+}
+.gistResetButtonContainer {
+  width: 100%;
+}
+.gistLoadButtonContainer button {
+  width: 100%;
+}
+
+.gistResetButtonContainer button {
+  width: 100%;
+}
+
+.gistContainer {
 }
 
 .gistContainer .loadingText {
   font-family: inherit; /* 1 */
   font-size: 100%; /* 1 */
-  padding-top: 1px;
-  padding-bottom: 2px;
-}
-
-.gistContainer button {
-  font-family: inherit; /* 1 */
-  font-size: 100%; /* 1 */
-
-  padding-top: 1px;
-  padding-bottom: 2px;
-  margin: 0;
-
-  background: var(--tab-background-color);
-  color: var(--tab-text-color);
-  border: 0;
-  box-shadow: none;
-  border-radius: 0px;
-  outline: none;
-}
-
-.gistContainer button:hover {
-  background: var(--tab-background-active-color);
-  color: var(--tab-text-active-color);
-}
-
-.gistContainer button:active {
-  background: var(--tab-background-color);
-  color: var(--tab-text-color);
 }
 
 /*----------------------------------------------------------------------*/
@@ -96,15 +120,10 @@
 .gistContainer input {
   font-family: inherit; /* 1 */
   font-size: 100%; /* 1 */
-
-  padding-top: 1px;
-  padding-bottom: 2px;
-  margin: 0;
-
+  width: 100%;
   background: var(--tab-background-color);
   color: var(--tab-text-color);
   border: 0;
-  box-shadow: none;
   border-radius: 0px;
   outline: none;
 }

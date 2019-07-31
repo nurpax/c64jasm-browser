@@ -44,7 +44,7 @@ class LoadGistInput extends React.Component<LoadGistInputProps, { gistIdOrUrl: s
       <form
         onSubmit={this.handleSubmit}
         onBlur={() => this.props.onCancel()}
-        className={styles.gistInputContainer}>
+        className={cn(styles.gist, styles.gistInputContainer)}>
         <input
           placeholder='Gist ID or URL'
           onChange={this.handleInputChange}
@@ -66,7 +66,7 @@ class LoadGistInput extends React.Component<LoadGistInputProps, { gistIdOrUrl: s
 
 interface LoadGistProps {
   loadingGist: boolean;
-  onLoadGist: (gistId: string) => void;
+  onLoadGist: (gistId: string | null) => void;
 }
 
 interface LoadGistState {
@@ -83,6 +83,11 @@ class LoadGist extends React.PureComponent<LoadGistProps, LoadGistState> {
       return { editing: !prevState.editing };
     });
   }
+
+  handleResetWorkspace = () => {
+    this.props.onLoadGist(null);
+  }
+
   render () {
     if (this.props.loadingGist) {
       return (
@@ -107,7 +112,7 @@ class LoadGist extends React.PureComponent<LoadGistProps, LoadGistState> {
           />
         }
         {!this.state.editing &&
-          <div className={styles.gistLoadButtonContainer}>
+          <div className={cn(styles.gist, styles.gistLoadButtonContainer)}>
             <button
               onClick={this.handleOpenLoadInput}
               title='Load source files from a GitHub public Gist'
@@ -183,12 +188,27 @@ function computeSortOrder(files: string[]): number[] {
   arr.sort(([fnA, idxA], [fnB, idxB]) => {
     const extA = getFileExt(fnA);
     const extB = getFileExt(fnB);
-    if (extA == extB) {
+    if (extA === extB) {
       return fnA.localeCompare(fnB);
     }
     return extA.localeCompare(extB);
   });
   return arr.map(([_, i]) => i);
+}
+
+function ClearWorkspace(props: { onLoadGist: (gistId: string | null) => void}) {
+  return (
+    <div className={cn(styles.gist)}>
+      <div className={styles.gistResetButtonContainer}>
+        <button
+          onClick={() => props.onLoadGist(null)}
+          title='Reset the workspace.  Cannot be undone.'
+        >
+          Reset Workspace
+        </button>
+      </div>
+    </div>
+  )
 }
 
 interface SourceTabsProps {
@@ -197,7 +217,7 @@ interface SourceTabsProps {
   files: SourceFile[];
 
   loadingGist: boolean;
-  onLoadGist: (gistId: string) => void;
+  onLoadGist: (gistId: string | null) => void;
 }
 
 export default class extends React.Component<SourceTabsProps> {
@@ -212,6 +232,7 @@ export default class extends React.Component<SourceTabsProps> {
     const sortIdx = this.getSortOrder(filenames);
     return (
       <div className={styles.container}>
+        <div className={styles.heading}>Source files</div>
         <Tabs
           filenames={filenames}
           sortIdx={sortIdx}
@@ -222,6 +243,7 @@ export default class extends React.Component<SourceTabsProps> {
           onLoadGist={this.props.onLoadGist}
           loadingGist={this.props.loadingGist}
         />
+        <ClearWorkspace onLoadGist={this.props.onLoadGist} />
       </div>
     )
   }
