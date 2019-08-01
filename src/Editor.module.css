@@ -21,34 +21,13 @@
     box-shadow: var(--window-drop-shadow);
 }
 
-.textarea {
+.overlayCommon {
     position: absolute;
     top: 0px;
     left: 0px;
-
-    padding: 0px;
-    line-height: var(--code-window-line-height);
-    resize: none;
-    outline: none !important;
-
-    background: rgba(0,0,0,0);
-    color: var(--code-window-text-color);
-
     width:100%;
     height: 100%;
-    box-sizing: border-box;         /* For IE and modern versions of Chrome */
-    -moz-box-sizing: border-box;    /* For Firefox                          */
-    -webkit-box-sizing: border-box; /* For Safari                           */
-
-    overflow-y: auto;
-
-    border-width: 0px;
-
-    z-index: 10;
-}
-
-.textareaHighlightOverlay {
-    position: absolute;
+    max-height: 100%;
 
     display: flex;
     flex-direction: column;
@@ -57,21 +36,37 @@
     align-items: flex-start;
 
     resize: none;
-    top: 0px;
-    left: 0px;
     outline: none !important;
     padding: 0px;
-    width:100%;
+    border-width: 0px;
 
-    background: var(--code-window-background);
     color: rgb(255,255,255);
 
-    height: 100%;
-    max-height: 100%;
     line-height: var(--code-window-line-height);
+}
 
-    overflow-y: hidden;
+.textarea {
+    background: rgba(0,0,0,0);
+    /* Hide the text as its rendered by syntax highlighter layer.
+
+    Must use text-fill-color because otherwise selection won't be
+    visible.
+    */
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    caret-color: var(--code-window-text-color); /* but show cursor! */
+
+    overflow: auto;
+    z-index: 10;
+}
+.textarea::selection {
+    background: #aaa;
+}
+
+.textareaHighlightOverlay {
+    background: var(--code-window-background);
     pointer-events: none;
+    overflow: hidden;
 }
 
 .textareaHighlightRow {
@@ -103,7 +98,6 @@
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    overflow-x: hidden;
 
     transform: translateX(calc(-1*var(--gutter-width) - 3px));
 
@@ -119,8 +113,48 @@
 
 .gutterRow {
     color: var(--gutter-text-color);
+    height: var(--code-window-line-height);
+    min-height: var(--code-window-line-height);
+    line-height: var(--code-window-line-height);
 }
 
 .gutterRowSelected {
     color: var(--gutter-text-highlight-color);
+}
+
+
+
+/*-----------------------------------------------------------------------
+ * syntax hilighting
+ *-----------------------------------------------------------------------*/
+
+.textareaSyntaxHighlightOverlay {
+    z-index: 11;
+    overflow: hidden;
+    pointer-events: none;
+    background: transparent;
+}
+
+.textareaSyntaxHighlightRow {
+    width: 100%;
+    height: var(--code-window-line-height);
+    min-height: var(--code-window-line-height);
+    line-height: var(--code-window-line-height);
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+}
+
+.textareaSyntaxHighlightRow pre {
+    height: var(--code-window-line-height);
+    min-height: var(--code-window-line-height);
+    line-height: var(--code-window-line-height);
+}
+
+.hiliteNormal {
+    color: var(--code-window-text-color);
+}
+
+.hiliteComment {
+   color: var(--code-window-comment-color);
 }

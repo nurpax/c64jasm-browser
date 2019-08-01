@@ -53,15 +53,23 @@
   padding-top: 1px;
   padding-bottom: 3px;
 
-  margin-bottom: 2px;
+  border-bottom: 1.5px solid rgba(0,0,0,0.08);
+  margin-bottom: 0px;
   margin-left: 0px;
   margin-right: 0px;
   margin-top: 0px;
+
+  font-size: 14px;
 }
 
-.tab.active {
+.tab.active, .tab.active:hover {
   background: var(--tab-background-active-color);
   color: var(--tab-text-active-color);
+}
+
+.tab:hover {
+  background: var(--tab-background-hover-color);
+  color: var(--tab-text-hover-color);
 }
 
 

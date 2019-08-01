@@ -16,6 +16,7 @@
 
   --code-window-num-lines: 25;
   --code-window-text-color: rgb(207, 207, 207);
+  --code-window-comment-color: rgb(103, 150, 83);
   --code-window-background: rgb(30,30,30);
   --code-window-font-size: 13px;
   --code-window-font-weight: 300;
@@ -24,8 +25,9 @@
 
   --tab-background-color: #282828;
   --tab-background-active-color: #111;
-  --tab-text-color: #ccc;
-  --tab-text-active-color: #fff;
+  --tab-background-hover-color: #222222;
+  --tab-text-color: var(--body-color);
+  --tab-text-active-color: #ddd;
   --tab-drop-shadow: 1.0px 1.0px 3px 0px rgba(0, 0, 0, 0.3);
 
   --disasm-window-text-color: var(--code-window-text-color);
@@ -79,7 +81,7 @@ pre {
     "source-tabs code disasm"
     "source-tabs diag diag";
   grid-template-rows: calc(0.9*10vh) calc(0.9*70vh) calc(0.9*20vh);
-  grid-template-columns: 240px 1fr 1fr;
+  grid-template-columns: 210px 1fr 1fr;
   grid-row-gap: 5px;
   grid-column-gap: 10px;
   width: 90%;

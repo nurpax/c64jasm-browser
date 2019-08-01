@@ -3,9 +3,10 @@ import React, { Fragment } from 'react';
 import indentTextarea from 'indent-textarea';
 import cn from 'classnames';
 import ResizeObserver from 'resize-observer-polyfill';
+import { SourceLoc } from 'c64jasm';
 
 import { findLine } from './editing';
-import { SourceLoc } from 'c64jasm';
+import { Color, syntaxHighlight } from './syntaxHighlighting';
 import styles from './Editor.module.css';
 
 const tabLength = 4;
@@ -119,8 +120,66 @@ const Highlighter = React.forwardRef((props: HighlighterProps, ref: React.Ref<HT
     }
   }
   return (
-    <div ref={ref} className={styles.textareaHighlightOverlay}>
+    <div ref={ref} className={cn(styles.overlayCommon, styles.textareaHighlightOverlay)}>
       {rows}
+    </div>
+  );
+})
+
+interface SyntaxHighlighterProps {
+  startRow: number;
+  numRows: number;
+  textLines: string[];
+
+  // Fixed dims is required so that the div size adjusts to a
+  // smaller width/height when the <textarea> (that this
+  // syntax highlighter mirrors) has borders, the syntax
+  // highlighter div won't render on top of the scrollbars.
+  fixedDims: { width: number, height: number };
+
+  // Scroll left is basically the same as writing to ref.scrollLeft
+  // except that we pull this off by a styling change, setting
+  // a negative left margin on the div.  The highlighter
+  // div needs to be wrapped in another div so that the left side
+  // of the syntax highlighted text will be clipped.
+  scrollLeft: number;
+}
+
+const SyntaxHighlighter = React.forwardRef((props: SyntaxHighlighterProps, ref: React.Ref<HTMLDivElement>) => {
+  const rows = [];
+  // Pad rows is required for smooth scrolling (so that there is overflow-y to scroll)
+  const padRows = 2;
+  type HighlightEntry = {
+    [K in Color]: string;
+  }
+  const hilightStyles: HighlightEntry = {
+    'normal': styles.hiliteNormal,
+    'comment': styles.hiliteComment,
+  };
+  for (let i = props.startRow; i < props.startRow + props.numRows + padRows; i++) {
+    const spanElts = [];
+    if (i < props.textLines.length) {
+      const line = props.textLines[i];
+      const spans = syntaxHighlight(line);
+      for (let j = 0; j < spans.length; j++) {
+        const { text, color } = spans[j];
+        spanElts.push(<pre key={j} className={hilightStyles[color]} style={{display: 'inline-block'}}>{text}</pre>);
+      }
+    }
+    rows.push(<div className={styles.textareaSyntaxHighlightRow} key={i}>{spanElts}</div>);
+  }
+  return (
+    <div
+      ref={ref}
+      className={cn(styles.overlayCommon, styles.textareaSyntaxHighlightOverlay)}
+      style={{
+        width: `${props.fixedDims.width}px`,
+        height: `${props.fixedDims.height}px`
+      }}
+    >
+      <div style={{marginLeft: `-${props.scrollLeft}px`}}>
+        {rows}
+      </div>
     </div>
   );
 })
@@ -130,6 +189,7 @@ interface GutterProps {
   numRows: number;
   numTextRows: number;
   currentLine: number | undefined;
+  height: number;
 }
 
 const Gutter = React.forwardRef((props: GutterProps, ref: React.Ref<HTMLDivElement>) => {
@@ -142,7 +202,11 @@ const Gutter = React.forwardRef((props: GutterProps, ref: React.Ref<HTMLDivEleme
     rows.push(<div className={cn(styles.gutterRow, selected)} key={i}>{numStr}</div>);
   }
   return (
-    <div ref={ref} className={styles.gutter}>
+    <div
+      ref={ref}
+      className={styles.gutter}
+      style={{height: `${props.height}px`}}
+    >
       {rows}
     </div>
   );
@@ -159,6 +223,7 @@ interface EditorProps {
 
 interface EditorState {
   scrollTop: number;
+  scrollLeft: number;
   currentLine: number | undefined;
   textLines: string[];
   textareaDims: { width: number, height: number };
@@ -174,6 +239,7 @@ export default class extends React.Component<EditorProps, EditorState> {
 
     this.state = {
       scrollTop: 0,
+      scrollLeft: 0,
       currentLine: 0,
       textLines: this.props.defaultValue.split('\n'),
       textareaDims: { width: 0, height: 0 }
@@ -200,10 +266,11 @@ export default class extends React.Component<EditorProps, EditorState> {
   textareaRef = React.createRef<HTMLTextAreaElement>();
   gutterRef = React.createRef<HTMLDivElement>();
   highlighterRef = React.createRef<HTMLDivElement>();
+  syntaxHighlighterRef = React.createRef<HTMLDivElement>();
 
   handleScroll = (e: React.UIEvent<HTMLTextAreaElement>) => {
-    const { scrollTop } = e.nativeEvent.target as any;
-    this.setState({ scrollTop });
+    const { scrollTop, scrollLeft } = e.nativeEvent.target as any;
+    this.setState({ scrollTop, scrollLeft });
   }
 
   handleSourceChanged = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -274,6 +341,9 @@ export default class extends React.Component<EditorProps, EditorState> {
       if (this.highlighterRef.current) {
         this.highlighterRef.current.scrollTop = vscroll;
       }
+      if (this.syntaxHighlighterRef.current) {
+        this.syntaxHighlighterRef.current.scrollTop = vscroll;
+      }
     }
   }
 
@@ -307,6 +377,7 @@ export default class extends React.Component<EditorProps, EditorState> {
             numRows={numEditorCharRows}
             numTextRows={this.state.textLines.length}
             currentLine={this.state.currentLine}
+            height={this.state.textareaDims.height}
           />
           <div className={styles.textContainer} onMouseDown={this.handleMouseDown}>
             <Highlighter
@@ -318,6 +389,7 @@ export default class extends React.Component<EditorProps, EditorState> {
               lineToErrors={lineToErrorsMap}
             />
             <textarea
+              className={cn(styles.overlayCommon, styles.textarea)}
               defaultValue={this.props.defaultValue}
               wrap='off'
               onKeyUp={this.handleKeyUp}
@@ -326,7 +398,14 @@ export default class extends React.Component<EditorProps, EditorState> {
               onScroll={this.handleScroll}
               ref={this.textareaRef}
               onChange={this.handleSourceChanged}
-              className={styles.textarea}
+            />
+            <SyntaxHighlighter
+              ref={this.syntaxHighlighterRef}
+              startRow={startCharRow}
+              fixedDims={this.state.textareaDims}
+              scrollLeft={this.state.scrollLeft}
+              numRows={numEditorCharRows}
+              textLines={this.state.textLines}
             />
           </div>
         </div>
