@@ -141,7 +141,11 @@ class App extends React.Component<{}, AppState> {
           sourceFiles: {
             files: prebuiltFiles,
             selected: 0
-          }
+          },
+          disassembly: [],
+          prg: Buffer.from([]),
+          diagnosticsIndex: 0,
+          diagnostics: [] as Diag[]
         }
       });
       return;
