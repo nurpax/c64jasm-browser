@@ -130,6 +130,7 @@ interface SyntaxHighlighterProps {
   startRow: number;
   numRows: number;
   textLines: string[];
+  sourceFileExt: string;
 
   // Fixed dims is required so that the div size adjusts to a
   // smaller width/height when the <textarea> (that this
@@ -160,7 +161,7 @@ const SyntaxHighlighter = React.forwardRef((props: SyntaxHighlighterProps, ref: 
     const spanElts = [];
     if (i < props.textLines.length) {
       const line = props.textLines[i];
-      const spans = syntaxHighlight(line);
+      const spans = syntaxHighlight(props.sourceFileExt, line);
       for (let j = 0; j < spans.length; j++) {
         const { text, color } = spans[j];
         spanElts.push(<pre key={j} className={hilightStyles[color]} style={{display: 'inline-block'}}>{text}</pre>);
@@ -219,6 +220,7 @@ interface EditorProps {
   onSourcePositionChanged: (cursorOffset: number) => void;
   diagnostics: { loc: SourceLoc, msg: string }[];
   errorCharOffset: number | undefined;
+  sourceFileExt: string; // asm, js, etc..
 }
 
 interface EditorState {
@@ -406,6 +408,7 @@ export default class extends React.Component<EditorProps, EditorState> {
               scrollLeft={this.state.scrollLeft}
               numRows={numEditorCharRows}
               textLines={this.state.textLines}
+              sourceFileExt={this.props.sourceFileExt}
             />
           </div>
         </div>

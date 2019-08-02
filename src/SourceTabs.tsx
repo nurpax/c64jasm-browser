@@ -5,7 +5,7 @@ import cn from 'classnames';
 
 import memoizeOne from 'memoize-one';
 
-import { SourceFile } from './types';
+import { SourceFile, getFileExt } from './types';
 
 interface LoadGistInputProps {
   onCancel: () => void;
@@ -174,10 +174,6 @@ function stringArrayEqual(newArgs: string[][], oldArgs: string[][]) {
     }
   }
   return true;
-}
-
-function getFileExt(fname: string) {
-  return fname.slice((fname.lastIndexOf(".") - 1 >>> 0) + 2);
 }
 
 function computeSortOrder(files: string[]): number[] {

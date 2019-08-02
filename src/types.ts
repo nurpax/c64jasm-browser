@@ -8,3 +8,7 @@ export interface SourceFile {
   text: Buffer;
   cursorOffset: number;
 };
+
+export function getFileExt(fname: string) {
+  return fname.slice((fname.lastIndexOf(".") - 1 >>> 0) + 2);
+}
