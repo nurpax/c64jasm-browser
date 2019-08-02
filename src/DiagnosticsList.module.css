@@ -15,10 +15,6 @@
     flex-direction: column;
 }
 
-.heading {
-    margin-bottom: var(--heading-bottom-margin);
- }
-
 .diagnosticsBox {
     font-size: 1.0em;
     font-family: monospace;

@@ -1,9 +1,4 @@
 
-.heading {
-    margin-bottom: var(--heading-bottom-margin);
-    user-select: none;
-}
-
 .layoutContainer {
     width:100%;
     height:100%;

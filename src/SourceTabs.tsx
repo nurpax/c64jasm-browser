@@ -196,19 +196,28 @@ function computeSortOrder(files: string[]): number[] {
   return arr.map(([_, i]) => i);
 }
 
-function ClearWorkspace(props: { onLoadGist: (gistId: string | null) => void}) {
+function TabButton(props: { text: string, title: string, onClick: () => void, yMargin?: boolean }) {
   return (
-    <div className={cn(styles.gist)}>
+    <div className={cn(styles.gist, props.yMargin && styles.extraYMargin)}>
       <div className={styles.gistResetButtonContainer}>
         <button
-          onClick={() => props.onLoadGist(null)}
-          title='Reset the workspace.  Cannot be undone.'
+          onClick={props.onClick}
+          title={props.title}
         >
-          Reset Workspace
+          {props.text}
         </button>
       </div>
     </div>
-  )
+  );
+}
+
+interface SourceTabsRenderPropArgs {
+  Button: (props: {
+    text: string,
+    title: string,
+    onClick: () => void,
+    yMargin?: boolean
+  }) => React.ReactElement;
 }
 
 interface SourceTabsProps {
@@ -218,6 +227,7 @@ interface SourceTabsProps {
 
   loadingGist: boolean;
   onLoadGist: (gistId: string | null) => void;
+  renderExtras?: (args: SourceTabsRenderPropArgs) => React.ReactElement;
 }
 
 export default class extends React.Component<SourceTabsProps> {
@@ -232,7 +242,7 @@ export default class extends React.Component<SourceTabsProps> {
     const sortIdx = this.getSortOrder(filenames);
     return (
       <div className={styles.container}>
-        <div className={styles.heading}>Source files</div>
+        <div className='heading'><div className='heading-pad'>Source files</div></div>
         <Tabs
           filenames={filenames}
           sortIdx={sortIdx}
@@ -243,7 +253,9 @@ export default class extends React.Component<SourceTabsProps> {
           onLoadGist={this.props.onLoadGist}
           loadingGist={this.props.loadingGist}
         />
-        <ClearWorkspace onLoadGist={this.props.onLoadGist} />
+        {this.props.renderExtras && this.props.renderExtras({
+          Button: (props) => <TabButton {...props}  />
+        })}
       </div>
     )
   }

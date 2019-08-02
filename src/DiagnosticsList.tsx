@@ -56,7 +56,7 @@ export default class DiagnosticsList extends React.PureComponent<DiagnosticsList
     const diags = this.props.diagnostics;
     return (
       <div className={styles.layoutContainer}>
-        <div className={styles.heading}>Diagnostics</div>
+        <div className='heading'><div className='heading-pad'>Diagnostics</div></div>
         <div className={styles.diagnostics}>
           <div className={styles.diagnosticsBox}>
             {diags.map((d: Diag, idx) => {

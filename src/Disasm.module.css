@@ -1,12 +1,4 @@
 
-.heading {
-   margin-bottom: var(--heading-bottom-margin);
-   display: flex;
-   flex-direction: row;
-   justify-content: space-between;
-   align-items: center;
-   user-select: none;
-  }
 
 .layoutContainer {
     width:100%;
@@ -23,8 +15,4 @@
     color: var(--disasm-window-text-color);
 
     box-shadow: var(--window-drop-shadow);
-}
-
-.downloadButton {
-  font-size: 0.8em;
 }

@@ -14,25 +14,3 @@
     font-weight: bold;
     color: var(--header-foreground-color);
 }
-
-.helpLink {
-    font-size: 1.3em;
-    color: var(--header-foreground-color);
-}
-
-.githubLink {
-    font-size: 0.9em;
-    margin-top: 10px;
-    color: var(--header-foreground-darker-color);
-}
-
-.githubLink a {
-    color: var(--header-foreground-color);
-}
-
-.appHelpLinksContainer {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-end;
-}

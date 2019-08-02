@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { assemble, disassemble } from 'c64jasm';
+import FileSaver from 'file-saver';
 
 import { Diag, SourceFile } from './types';
 import * as asmBuiltins from './asmBuiltins';
@@ -34,10 +35,6 @@ export function debounce<F extends (...params: any[]) => void>(fn: F, delay: num
   } as F;
 }
 
-
-function Emoji(props: {emoji: string}) {
-  return <span aria-label='emoji' role='img'>{props.emoji}</span>
-}
 
 interface SourceFiles {
   selected: number;
@@ -380,13 +377,22 @@ class App extends React.Component<{}, AppState> {
     }
   }
 
-  handleClickHelp = (e: React.MouseEvent) => {
-    e.preventDefault();
+  handleClickHelp = () => {
     this.setState({ helpVisible: true });
   }
 
   handleCloseHelp = () => {
     this.setState({ helpVisible: false });
+  }
+
+  handleDownloadPRG = () => {
+    const blob = new Blob([this.state.prg]);
+    FileSaver.saveAs(blob, "c64jasm-online.prg");
+  }
+
+  handleDownloadDisasm = () => {
+    var blob = new Blob([this.state.disassembly.join('\n')], {type: "text/plain;charset=utf-8"});
+    FileSaver.saveAs(blob, "c64jasm-online.s");
   }
 
   handleSourceTabSelected = (idx: number) => {
@@ -399,6 +405,7 @@ class App extends React.Component<{}, AppState> {
       }
     });
   }
+
   render () {
     const diags: Diag[] = this.state.diagnostics;
     let editorErrorLoc = undefined;
@@ -421,15 +428,6 @@ class App extends React.Component<{}, AppState> {
           <div className={styles.headerContainer}>
             <div>
               <div className={styles.appTitle}><a href='https://nurpax.github.io/c64jasm/'>c64jasm</a> online</div>
-              <p>A little experimental 6502 assembler for the C64</p>
-            </div>
-            <div className={styles.appHelpLinksContainer}>
-              <div className={styles.helpLink}>
-                <Emoji emoji='👉' />&nbsp;
-                <a onClick={this.handleClickHelp} href='/' target='_blank'>Help
-                </a>
-              </div>
-              <div className={styles.githubLink}>(<a href='https://github.com/nurpax/c64jasm-browser'>source code</a>)</div>
             </div>
           </div>
         </div>
@@ -450,7 +448,7 @@ class App extends React.Component<{}, AppState> {
           />
         </div>
         <div id="siteDisasm">
-          <Disasm disassembly={this.state.disassembly} prg={this.state.prg} />
+          <Disasm disassembly={this.state.disassembly} />
         </div>
         <div id="mainSourceTabs">
           <SourceTabs
@@ -460,6 +458,16 @@ class App extends React.Component<{}, AppState> {
             files={this.state.sourceFiles.files}
             onLoadGist={this.loadGist}
             loadingGist={this.state.gist.loading}
+            renderExtras={({ Button}) => {
+              return (
+                <React.Fragment>
+                  <Button text='Reset Workspace' title='Reset the workspace.  Cannot be undone.' onClick={() => this.loadGist(null)} />
+                  <Button text='Save PRG' title='Download compiled binary as C64 .prg' yMargin onClick={this.handleDownloadPRG} />
+                  <Button text='Save Disasm' title='Download the output disassemble file' onClick={this.handleDownloadDisasm} />
+                  <Button text='Help' title='C64jasm online help.' yMargin onClick={this.handleClickHelp} />
+                </React.Fragment>
+              )
+            }}
           />
         </div>
         <div id="mainDiag">

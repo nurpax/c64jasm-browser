@@ -369,7 +369,7 @@ export default class extends React.Component<EditorProps, EditorState> {
       this.state.textareaDims.height !== 0 ? Math.ceil(this.state.textareaDims.height / this.editorLineHeight) : 1;
     return (
       <div className={styles.layoutContainer}>
-        <div className={styles.heading}>Assembly</div>
+        <div className='heading'><div className='heading-pad'>Assembly</div></div>
         <div className={styles.editorContainer}>
           <Gutter
             ref={this.gutterRef}

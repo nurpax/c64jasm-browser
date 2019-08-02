@@ -5,7 +5,10 @@
 /*  --window-group-background: rgb(37, 37, 38);*/
   --window-group-background: rgb(51, 51, 51);
   --body-background: var(--window-group-background);
+
   --heading-bottom-margin: 0.4em;
+  --heading-background-color: rgb(5, 140, 173);
+  --heading-foreground-color: white;
 
   --gutter-width: 25px;
   --gutter-text-color: #999;
@@ -80,12 +83,12 @@ pre {
     "     .      header header"
     "source-tabs code disasm"
     "source-tabs diag diag";
-  grid-template-rows: calc(0.9*10vh) calc(0.9*70vh) calc(0.9*20vh);
+  grid-template-rows: 30px calc(0.9*70vh) calc(0.9*20vh);
   grid-template-columns: 210px 1fr 1fr;
   grid-row-gap: 5px;
   grid-column-gap: 10px;
   width: 90%;
-  height: 90%;
+  height: calc(30px + 0.9*70vh + 0.9*20vh);
   margin: 0;
 }
 
@@ -151,3 +154,20 @@ a, a:visited {
 a:hover {
   text-decoration: underline;
 }
+
+
+
+.heading {
+  width: 100%;
+  margin-bottom: var(--heading-bottom-margin);
+  background: var(--heading-background-color);
+  color: var(--heading-foreground-color);
+  overflow: hidden;
+}
+.heading-pad {
+  padding-left: 4px;
+  padding-top: 3px;
+  padding-bottom: 3px;
+}
+
+

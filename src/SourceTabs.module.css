@@ -9,11 +9,6 @@
   margin-right: 16px;
 }
 
-.heading {
-  margin-bottom: var(--heading-bottom-margin);
-  padding-left: 3px;
-}
-
 .tabContainer {
   display: flex;
   flex-direction: column;
@@ -29,9 +24,9 @@
   justify-content: flex-start;
   align-items: center;
 
-  margin-top: 15px;
+  margin-top: 25px;
 
-  margin-bottom: 4px;
+  margin-bottom: 0px;
   margin-left: 0px;
   margin-right: 0px;
 }
@@ -77,12 +72,18 @@
 /* button styles */
 .gist {
   width: 100%;
-  margin-bottom: 3px;
+  margin-bottom: 7px;
+}
+
+.extraYMargin {
+  margin-top: 20px;
 }
 
 .gist button {
   font-family: inherit; /* 1 */
   font-size: 100%; /* 1 */
+
+  cursor: pointer;
 
   background: var(--tab-background-color);
   color: var(--tab-text-color);
@@ -92,8 +93,8 @@
 }
 
 .gist button:hover {
-  background: var(--tab-background-active-color);
-  color: var(--tab-text-active-color);
+  background: var(--tab-background-hover-color);
+  color: var(--tab-text-hover-color);
 }
 
 .gist button:active {
