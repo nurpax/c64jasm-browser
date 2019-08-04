@@ -313,9 +313,12 @@ export default class extends React.Component<EditorProps, EditorState> {
       this.textareaRef.current.spellcheck = false;
       this.textareaRef.current.selectionStart = this.props.defaultCursorOffset;
       this.textareaRef.current.selectionEnd = this.props.defaultCursorOffset;
-      this.textareaRef.current.focus();
 
       this.resizeObserver.observe(this.textareaRef.current);
+
+      // Reset scrollTop
+      this.textareaRef.current.blur();
+      this.textareaRef.current.focus();
     }
   }
 
@@ -325,12 +328,12 @@ export default class extends React.Component<EditorProps, EditorState> {
     }
   }
 
-
   componentDidUpdate (prevProps: EditorProps, prevState: EditorState) {
     if (this.textareaRef.current) {
       if (this.props.errorCharOffset !== undefined) {
-        this.textareaRef.current.focus();
         this.textareaRef.current.setSelectionRange(this.props.errorCharOffset, this.props.errorCharOffset);
+        this.textareaRef.current.blur();
+        this.textareaRef.current.focus();
       }
     }
 
