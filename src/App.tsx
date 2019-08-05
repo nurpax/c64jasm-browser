@@ -168,7 +168,11 @@ class App extends React.Component<{}, AppState> {
         this.setState(prevState => {
           const files: SourceFile[] = [];
           let selected = 0;
+          let containsC64Macros = false;
           for (const file of Object.values(json.files) as any) {
+            if (file.filename === 'c64.asm') {
+              containsC64Macros = true;
+            }
             files.push({
               name: file.filename,
               text: Buffer.from(file.content, 'base64'),
@@ -178,7 +182,11 @@ class App extends React.Component<{}, AppState> {
               selected = files.length-1;
             }
           }
-          files.push({ name: 'c64.asm', text: Buffer.from(asmBuiltins.c64), cursorOffset: 0 });
+          // Don't add c64.asm built-ins if a file with the same
+          // name was already included in the gist.
+          if (!containsC64Macros) {
+            files.push({ name: 'c64.asm', text: Buffer.from(asmBuiltins.c64), cursorOffset: 0 });
+          }
           return {
             gist: {
               ...prevState.gist,
