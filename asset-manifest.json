@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/c64jasm-browser/static/css/main.b6cde60e.chunk.css",
-    "main.js": "/c64jasm-browser/static/js/main.62613fd9.chunk.js",
-    "main.js.map": "/c64jasm-browser/static/js/main.62613fd9.chunk.js.map",
+    "main.js": "/c64jasm-browser/static/js/main.15ff8991.chunk.js",
+    "main.js.map": "/c64jasm-browser/static/js/main.15ff8991.chunk.js.map",
     "runtime~main.js": "/c64jasm-browser/static/js/runtime~main.d6512d46.js",
     "runtime~main.js.map": "/c64jasm-browser/static/js/runtime~main.d6512d46.js.map",
     "static/js/2.7b2c5585.chunk.js": "/c64jasm-browser/static/js/2.7b2c5585.chunk.js",
     "static/js/2.7b2c5585.chunk.js.map": "/c64jasm-browser/static/js/2.7b2c5585.chunk.js.map",
     "index.html": "/c64jasm-browser/index.html",
-    "precache-manifest.5e02b098204f0d476273557631a291b1.js": "/c64jasm-browser/precache-manifest.5e02b098204f0d476273557631a291b1.js",
+    "precache-manifest.87d59a7c7ee6a15643fc0bf9877b584c.js": "/c64jasm-browser/precache-manifest.87d59a7c7ee6a15643fc0bf9877b584c.js",
     "service-worker.js": "/c64jasm-browser/service-worker.js",
     "static/css/main.b6cde60e.chunk.css.map": "/c64jasm-browser/static/css/main.b6cde60e.chunk.css.map"
   }
