@@ -339,11 +339,13 @@ class App extends React.Component<{}, AppState> {
       const res = assemble("main.asm", options);
       if (res.errors.length === 0) {
         const disasmOptions = {
+          showCycles: true,
+          showLabels: true,
           isInstruction: res.debugInfo.info().isInstruction
         };
         this.setState({
           prg: res.prg,
-          disassembly: disassemble(res.prg, disasmOptions),
+          disassembly: disassemble(res.prg, res.labels, disasmOptions),
           diagnostics: [],
           diagnosticsIndex: undefined
         });

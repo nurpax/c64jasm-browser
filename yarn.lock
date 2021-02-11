@@ -2361,10 +2361,10 @@ bytes@3.1.0:
   resolved "https://registry.yarnpkg.com/bytes/-/bytes-3.1.0.tgz#f6cf7933a360e0588fa9fde85651cdc7f805d1f6"
   integrity sha512-zauLjrfCG+xvoyaqLoV8bLVXXNGC4JqlxFCutSDWA6fJrTo2ZuvLYTqZ7aHBLZSMOopbzwv8f+wZcVzfVTI2Dg==
 
-c64jasm@^0.6.1:
-  version "0.6.1"
-  resolved "https://registry.yarnpkg.com/c64jasm/-/c64jasm-0.6.1.tgz#1ea7357740884070bf1b07fc7b166341a73ccdd8"
-  integrity sha512-Aj3NB+mB9KugpdgURXW0Wz9OASIutNo901IRK1Q43icE1pclM6IE/wTSyqiU++U5ZSueRyVsgz74kkLx8LrdTw==
+c64jasm@^0.9.0:
+  version "0.9.0"
+  resolved "https://registry.yarnpkg.com/c64jasm/-/c64jasm-0.9.0.tgz#ad73a7d2da945911e6706077c8c0789c92511313"
+  integrity sha512-jbpJ9hKwgO24X+wIloOz0HMWvK/ClQaFK2iI+B1rp5AwyC0KRaJWChg4dE34utrGBikLSUaeNUcmiVGgGQiDNg==
   dependencies:
     argparse "^1.0.10"
     chokidar "^2.0.4"

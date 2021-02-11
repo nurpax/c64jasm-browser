@@ -508,10 +508,10 @@ builtin-status-codes@^3.0.0:
   resolved "https://registry.yarnpkg.com/builtin-status-codes/-/builtin-status-codes-3.0.0.tgz#85982878e21b98e1c66425e03d0174788f569ee8"
   integrity sha1-hZgoeOIbmOHGZCXgPQF0eI9Wnug=
 
-c64jasm@^0.8.0:
-  version "0.8.0"
-  resolved "https://registry.yarnpkg.com/c64jasm/-/c64jasm-0.8.0.tgz#3952767aeb210fdf93f8d2bbca6d60d779d0e7fa"
-  integrity sha512-gmkOratknUbqMaCcjn+7MFWp7TjSAAh2389cS8aW23Vzox5VY4Y1jk7Qj+FhqRJwu97BC+xZ9/JkNf/wnmtzSw==
+c64jasm@^0.9.0:
+  version "0.9.0"
+  resolved "https://registry.yarnpkg.com/c64jasm/-/c64jasm-0.9.0.tgz#ad73a7d2da945911e6706077c8c0789c92511313"
+  integrity sha512-jbpJ9hKwgO24X+wIloOz0HMWvK/ClQaFK2iI+B1rp5AwyC0KRaJWChg4dE34utrGBikLSUaeNUcmiVGgGQiDNg==
   dependencies:
     argparse "^1.0.10"
     chokidar "^2.0.4"
